@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>搜索与设置 · 界面预览</title>
+<style>
+  :root{
+    --bg:#F4F5F7;--card:#FFFFFF;--ink:#1F2328;--muted:#6B7280;--faint:#9CA3AF;
+    --line:#E5E7EB;--blue:#185FA5;--blue-soft:#E6F1FB;
+    --high:#C2333A;--mid:#B45309;--low:#185FA5;--none:#6B7280;
+    --danger:#C2333A;--teal:#0F6E56;--teal-soft:#E1F5EE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;padding:40px 28px 72px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--blue);font-weight:600;margin-bottom:10px}
+  h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{font-size:14px;line-height:1.75;color:var(--muted);max-width:800px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--faint)}
+
+  h2.section{font-size:15px;font-weight:600;margin:44px 0 6px}
+  p.section-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;max-width:820px}
+
+  .grid{display:flex;flex-wrap:wrap;gap:22px;justify-content:center}
+  .item{width:276px}
+  .caption{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+  .caption b{color:var(--ink);font-weight:600}
+
+  .phone{width:276px;height:604px;background:var(--card);border:7px solid #23262B;border-radius:36px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+  .statusbar{height:26px;flex:0 0 26px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:10px;color:var(--faint)}
+  .statusbar .right{display:flex;gap:4px;align-items:center}
+  .bar{width:12px;height:6px;border:1px solid var(--faint);border-radius:2px;position:relative}
+  .bar::after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:7px;background:var(--faint);border-radius:1px}
+
+  .appbar{padding:6px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .appbar .t{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+  .appbar .s{font-size:11px;color:var(--muted);margin-top:3px}
+  .ic{width:18px;height:18px;display:block;stroke:var(--muted);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+  .searchbar{margin:0 12px 4px;height:34px;border-radius:9px;background:#F1F2F4;display:flex;align-items:center;gap:7px;padding:0 10px;font-size:11.5px;color:#9AA0A8}
+  .searchbar svg{width:14px;height:14px;stroke:#9AA0A8;fill:none;stroke-width:1.7;stroke-linecap:round}
+
+  .body{flex:1;overflow:hidden;padding:0 12px}
+  .group-label{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;padding:10px 4px 5px}
+
+  .row{display:flex;align-items:flex-start;gap:9px;padding:9px 6px 11px;position:relative}
+  .row+.row{border-top:1px solid #F3F4F6}
+  .bar-l{position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:2px}
+  .bar-l.h{background:var(--high)}.bar-l.m{background:var(--mid)}.bar-l.l{background:var(--low)}
+  .check{width:19px;height:19px;border-radius:50%;border:1.6px solid #C9CDD4;flex:0 0 19px;margin-top:1px;margin-left:4px}
+  .check.h{border-color:var(--high)}.check.m{border-color:var(--mid)}.check.l{border-color:var(--low)}
+  .row .main{flex:1;min-width:0}
+  .row .tt{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .mt{display:flex;gap:6px;align-items:center;margin-top:3px;font-size:10.5px;color:var(--faint)}
+  .tag{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-soft);color:var(--blue)}
+  .tag.life{background:#F3F4F6;color:var(--muted)}
+  .when{font-size:11px;color:var(--muted);flex:0 0 auto;padding-top:1px}
+  .when.late{color:#C2410C}
+
+  .tabbar{flex:0 0 56px;height:56px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;background:var(--card)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;color:var(--faint);width:48px}
+  .tab svg{width:18px;height:18px;stroke:var(--faint);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .tab.on{color:var(--blue)}.tab.on svg{stroke:var(--blue)}
+
+  /* search page */
+  .search-head{display:flex;align-items:center;gap:10px;padding:4px 14px 10px}
+  .search-input{flex:1;height:34px;border-radius:9px;background:#F1F2F4;display:flex;align-items:center;gap:7px;padding:0 9px;font-size:12.5px;color:var(--ink)}
+  .search-input svg{width:14px;height:14px;stroke:#9AA0A8;fill:none;stroke-width:1.7;stroke-linecap:round}
+  .search-input .cur{display:inline-block;width:1.5px;height:14px;background:var(--blue);vertical-align:-2px;margin-left:1px}
+  .cancel{font-size:12px;color:var(--blue)}
+  .res-group{font-size:10px;color:var(--faint);font-weight:600;padding:8px 4px 4px;display:flex;justify-content:space-between}
+  .res-group span{font-weight:400}
+  .res{display:flex;gap:8px;align-items:center;padding:8px 4px;font-size:12px}
+  .res+.res{border-top:1px solid #F6F7F8}
+  .res .ri{width:18px;height:18px;border-radius:5px;background:#F1F2F4;flex:0 0 18px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--faint)}
+  .res .rt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .res .rd{font-size:9.5px;color:var(--faint)}
+  mark{background:#FDF0C8;color:inherit;padding:0 1px;border-radius:2px}
+  .recent{display:flex;gap:6px;flex-wrap:wrap;padding:4px}
+  .recent span{font-size:10.5px;padding:5px 9px;border-radius:12px;background:#F3F4F6;color:var(--muted)}
+
+  /* settings */
+  .set-body{flex:1;overflow:hidden;padding:0 12px}
+  .sec{font-size:10px;color:var(--faint);font-weight:600;letter-spacing:.06em;padding:8px 6px 4px}
+  .group{background:#FAFAFA;border:1px solid #F0F1F3;border-radius:11px;overflow:hidden}
+  .srow{display:flex;align-items:center;gap:9px;padding:9px 10px;font-size:12.5px}
+  .srow+.srow{border-top:1px solid #F0F1F3}
+  .sic{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:0 0 22px}
+  .sic.blue{background:var(--blue-soft)}.sic.teal{background:var(--teal-soft)}.sic.amber{background:#FAEEDA}.sic.gray{background:#EFEFEF}
+  .sic svg{width:12px;height:12px;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .sic.blue svg{stroke:var(--blue)}.sic.teal svg{stroke:var(--teal)}.sic.amber svg{stroke:#B45309}.sic.gray svg{stroke:var(--muted)}
+  .srow .nm{flex:1}
+  .srow .val{font-size:11px;color:var(--faint)}
+  .srow .chev{width:12px;height:12px;stroke:#C9CDD4;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .srow .badge{font-size:9.5px;padding:1px 6px;border-radius:9px;background:#FCEBEB;color:var(--danger)}
+
+  /* view switches */
+  .vrow{display:flex;align-items:center;gap:9px;padding:9px 10px;font-size:12px}
+  .vrow+.vrow{border-top:1px solid #F0F1F3}
+  .vrow .vt{flex:1}
+  .vrow .vh{font-size:9.5px;color:var(--faint);margin-top:1px}
+  .sw{width:34px;height:20px;border-radius:10px;background:#DDE1E6;position:relative;flex:0 0 34px}
+  .sw::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff}
+  .sw.on{background:var(--blue)}
+  .sw.on::after{left:16px}
+  .note{font-size:9.5px;color:var(--faint);line-height:1.6;padding:8px 6px}
+
+  /* trash */
+  .trash-item{border-bottom:1px solid #F3F4F6;padding:11px 4px}
+  .trash-item .t{font-size:12.5px;line-height:1.4}
+  .trash-item .m{font-size:9.5px;color:var(--faint);margin-top:3px;display:flex;gap:8px}
+  .trash-item .acts{display:flex;gap:14px;margin-top:7px;font-size:10.5px}
+  .acts .a1{color:var(--blue)}
+  .acts .a2{color:var(--danger)}
+  .trash-foot{padding:12px 4px}
+  .danger-btn{text-align:center;font-size:12px;color:var(--danger);border:1px solid #F3C7C7;background:#FEF7F7;border-radius:9px;padding:10px}
+
+  /* logs */
+  .chips{display:flex;gap:6px;padding:4px 4px 8px}
+  .chips span{font-size:10px;padding:4px 9px;border-radius:11px;border:1px solid var(--line);color:var(--muted)}
+  .chips span.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .log{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;line-height:1.75;color:#4B5563;padding:7px 4px;border-bottom:1px solid #F6F7F8;white-space:pre-wrap;word-break:break-all}
+  .log .tm{color:#9AA0A8}
+  .log.w .lv{color:#B45309}
+  .log.e .lv{color:var(--danger)}
+  .log .lv{font-weight:600}
+
+  /* about */
+  .about-top{text-align:center;padding:18px 0 6px}
+  .applogo{width:56px;height:56px;border-radius:15px;background:var(--blue);margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+  .applogo svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round}
+  .about-top .n{font-size:15px;font-weight:600}
+  .about-top .v{font-size:10.5px;color:var(--faint);margin-top:2px}
+  .about-foot{text-align:center;font-size:9.5px;color:#C4C8CE;padding-top:14px;line-height:1.8}
+
+  footer.page{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.8}
+  @media (max-width:760px){body{padding:24px 14px 48px}.item{width:100%}.phone{margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">导航与设置 · 界面预览</div>
+    <h1>搜索栏 · 五 Tab · 设置中枢</h1>
+    <p class="lede">底部导航可配置：今天与设置固定，中间最多三项（日历 / 习惯 / 备忘录）；专注已移到首页顶部做模式切换。设置页不是开关堆，而是"我的内容 + 导航 + 视图 + 外观 + 数据 + 开发者 + 关于"的中枢；清单页顶部常驻搜索栏。依据 ADR-0013 / 0014。</p>
+    <div class="meta"><span>默认 4 Tab · 可配 2–5</span><span>回收站保留 30 天</span><span>开发者入口默认隐藏</span></div>
+  </header>
+
+  <h2 class="section">一 · 搜索</h2>
+  <p class="section-sub">搜索栏常驻在标题下方：点一下直接输入，不再"先点图标再打字"。结果按任务、备忘录、清单分组，返回时列表停在原位置。</p>
+
+  <div class="grid">
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">4 项待办 · 1 项逾期</div></div>
+          <svg class="ic" viewBox="0 0 24 24" style="margin-top:4px"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+        </div>
+        <div class="searchbar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+          搜索任务、备忘录
+        </div>
+        <div class="body">
+          <div class="group-label" style="padding-top:8px">上午</div>
+          <div class="row"><span class="bar-l h"></span><span class="check h"></span><div class="main"><div class="tt">写周报，汇总本周进展</div><div class="mt"><span class="tag">工作</span><span>45 分钟</span></div></div><span class="when">09:30</span></div>
+          <div class="row"><span class="bar-l m"></span><span class="check m"></span><div class="main"><div class="tt">给客户回邮件</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">11:00</span></div>
+          <div class="row"><span class="bar-l l"></span><span class="check l"></span><div class="main"><div class="tt">买菜：西红柿、鸡蛋</div><div class="mt"><span class="tag life">生活</span></div></div><span class="when">全天</span></div>
+          <div class="group-label">下午</div>
+          <div class="row"><span class="bar-l h"></span><span class="check h"></span><div class="main"><div class="tt">电话会议：需求对齐</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">14:00</span></div>
+          <div class="row" style="border:0"><span class="check"></span><div class="main"><div class="tt">读《深度工作》30 页</div><div class="mt"><span class="tag life">成长</span></div></div><span class="when late">已逾期</span></div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>清单页</b> · 搜索栏常驻，标题只留一个更多入口；五个 Tab 均匀分布。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="search-head">
+          <div class="search-input">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+            <span>客户<span class="cur"></span></span>
+          </div>
+          <span class="cancel">取消</span>
+        </div>
+        <div class="body">
+          <div class="res-group">任务 <span>4 条</span></div>
+          <div class="res"><span class="ri">任</span><span class="rt">给<mark>客户</mark>回邮件</span><span class="rd">今天</span></div>
+          <div class="res"><span class="ri">任</span><span class="rt">整理<mark>客户</mark>问题清单</span><span class="rd">项目</span></div>
+          <div class="res-group">备忘录 <span>1 条</span></div>
+          <div class="res"><span class="ri">记</span><span class="rt"><mark>客户</mark>需求纪要 · 11月</span><span class="rd">2 张图</span></div>
+          <div class="res-group">清单 <span>1 个</span></div>
+          <div class="res"><span class="ri">单</span><span class="rt"><mark>客户</mark>项目</span><span class="rd">12 项</span></div>
+          <div class="res-group" style="padding-top:16px">最近搜索</div>
+          <div class="recent"><span>周报</span><span>会议</span><span>报销</span></div>
+          <div class="res-group" style="padding-top:12px">快捷筛选</div>
+          <div class="recent"><span>今天</span><span>已逾期</span><span>有提醒</span><span>无日期</span></div>
+          <div class="recent" style="padding-top:4px"><span>本周</span><span>已完成</span><span>带备忘录</span></div>
+          <div class="note" style="padding:16px 8px 0">搜索范围：任务标题、备注、备忘录正文、清单名。输入多个词用空格分隔，结果为"同时包含"。</div>
+        </div>
+      </div>
+      <div class="caption"><b>搜索页</b> · 实时过滤、关键词高亮；无结果时保留最近搜索与快捷筛选。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">设置</div><div class="s">本地数据 · 未登录</div></div>
+          <svg class="ic" viewBox="0 0 24 24" style="margin-top:4px"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+        </div>
+        <div class="set-body">
+          <div class="sec">我的内容</div>
+          <div class="group">
+            <div class="srow"><span class="sic blue"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span class="nm">备忘录</span><span class="val">12</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="sic teal"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg></span><span class="nm">已完成</span><span class="val">128</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="sic gray"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6.5 7l1 12h9l1-12"/></svg></span><span class="nm">回收站</span><span class="badge">3</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+
+          <div class="sec">导航与视图</div>
+          <div class="group">
+            <div class="srow"><span class="sic blue"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span><span class="nm">导航栏</span><span class="val">4 个启用</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="sic blue"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="7" rx="2"/><rect x="13.5" y="4" width="7" height="7" rx="2"/><rect x="3.5" y="13" width="7" height="7" rx="2"/><rect x="13.5" y="13" width="7" height="7" rx="2"/></svg></span><span class="nm">视图开关</span><span class="val">6 个启用</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+
+          <div class="sec">外观</div>
+          <div class="group">
+            <div class="srow"><span class="sic amber"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></span><span class="nm">主题</span><span class="val">跟随系统</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="sic amber"><svg viewBox="0 0 24 24"><path d="M4 7V5h10v2M9 5v14M6 19h6"/></svg></span><span class="nm">字号与重要性配色</span><span class="val">标准 · 默认</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+
+          <div class="sec">数据</div>
+          <div class="group">
+            <div class="srow"><span class="sic teal"><svg viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4M5 19h14"/></svg></span><span class="nm">备份与恢复</span><span class="val">86 MB</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+
+          <div class="sec">关于</div>
+          <div class="group">
+            <div class="srow"><span class="sic gray"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.5"/></svg></span><span class="nm">版本与许可</span><span class="val">1.0.0 (2)</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab on"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>设置首页</b> · 六段结构；备忘录与回收站都在第一屏，不再藏进抽屉深处。</div>
+    </div>
+  </div>
+
+  <h2 class="section">二 · 设置内的四个关键页</h2>
+  <p class="section-sub">视图开关按设备保存；回收站保留 30 天并显示剩余天数；开发者日志默认折叠，连点版本号才出现。</p>
+
+  <div class="grid">
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar" style="padding-bottom:4px"><div><div class="t" style="font-size:17px">视图开关</div><div class="s">仅影响本设备</div></div></div>
+        <div class="body" style="padding-top:2px">
+          <div class="group">
+            <div class="vrow"><div class="vt"><div>清单</div></div><span class="sw on"></span></div>
+            <div class="vrow"><div class="vt"><div>日历</div></div><span class="sw on"></span></div>
+            <div class="vrow"><div class="vt"><div>四象限</div></div><span class="sw on"></span></div>
+            <div class="vrow"><div class="vt"><div>表格</div><div class="vh">适合大屏，手机上默认隐藏</div></div><span class="sw"></span></div>
+            <div class="vrow"><div class="vt"><div>看板</div><div class="vh">适合大屏，手机上默认隐藏</div></div><span class="sw"></span></div>
+            <div class="vrow"><div class="vt"><div>时间轴</div><div class="vh">适合大屏，手机上默认隐藏</div></div><span class="sw"></span></div>
+          </div>
+          <div class="note">开关只改变"是否出现在切换弹层"，不会删除数据。桌面端单独保存一套。</div>
+          <div class="sec" style="padding-left:6px">默认视图</div>
+          <div class="group"><div class="srow"><span class="nm">打开清单时显示</span><span class="val">清单</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div></div>
+        </div>
+      </div>
+      <div class="caption"><b>视图开关</b> · 大屏视图标注原因；每个视图都能单独关掉。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar" style="padding-bottom:2px"><div><div class="t" style="font-size:17px">回收站</div><div class="s">保留 30 天，到期自动清理</div></div></div>
+        <div class="body">
+          <div class="trash-item">
+            <div class="t">整理旧照片</div>
+            <div class="m"><span>今天 14:20 删除</span><span>还剩 29 天</span></div>
+            <div class="acts"><span class="a1">恢复</span><span class="a2">彻底删除</span></div>
+          </div>
+          <div class="trash-item">
+            <div class="t">客户需求纪要 · 10月</div>
+            <div class="m"><span>昨天 09:10 删除</span><span>还剩 28 天</span></div>
+            <div class="acts"><span class="a1">恢复</span><span class="a2">彻底删除</span></div>
+          </div>
+          <div class="trash-item">
+            <div class="t">预约体检</div>
+            <div class="m"><span>11月15日 删除</span><span>还剩 25 天</span></div>
+            <div class="acts"><span class="a1">恢复</span><span class="a2">彻底删除</span></div>
+          </div>
+          <div class="trash-foot"><div class="danger-btn">清空回收站</div></div>
+          <div class="note">恢复时若原清单已删除，会落回收件箱并提示。</div>
+        </div>
+      </div>
+      <div class="caption"><b>回收站</b> · 每条显示剩余天数；清空需二次确认。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar" style="padding-bottom:0"><div><div class="t" style="font-size:17px">日志</div><div class="s">仅记录事件，不含任务内容</div></div><svg class="ic" viewBox="0 0 24 24" style="margin-top:4px"><path d="M12 4v11M8 11l4 4 4-4M5 19h14"/></svg></div>
+        <div class="body">
+          <div class="chips"><span class="on">全部</span><span>警告</span><span>错误</span></div>
+          <div class="log"><span class="tm">21:58:12</span> <span class="lv">INFO</span> 提醒已排程 id=7f2c 于 22:00</div>
+          <div class="log"><span class="tm">21:58:03</span> <span class="lv">INFO</span> 数据库迁移 v1 → v1 完成</div>
+          <div class="log w"><span class="tm">21:57:44</span> <span class="lv">WARN</span> 精确闹钟权限被拒，降级为非精确</div>
+          <div class="log"><span class="tm">21:57:40</span> <span class="lv">INFO</span> 前台服务启动 type=specialUse</div>
+          <div class="log"><span class="tm">21:57:12</span> <span class="lv">INFO</span> 应用启动 冷启动 1.2s</div>
+          <div class="log e"><span class="tm">21:56:58</span> <span class="lv">ERROR</span> 附件缺失 assets/notes/9a1/uuid.webp</div>
+          <div class="log"><span class="tm">21:56:40</span> <span class="lv">INFO</span> 备份完成 size=86MB</div>
+          <div style="padding:12px 4px"><div class="danger-btn" style="color:var(--blue);border-color:#C7DDF3;background:var(--blue-soft)">导出日志</div></div>
+        </div>
+      </div>
+      <div class="caption"><b>开发者 · 日志</b> · 按级别过滤、一键导出；三种埋点：提醒、计时、迁移。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar" style="padding-bottom:0"><div><div class="t" style="font-size:17px">关于</div></div></div>
+        <div class="body">
+          <div class="about-top">
+            <div class="applogo"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg></div>
+            <div class="n">任务</div>
+            <div class="v">版本 1.0.0 (2)</div>
+          </div>
+          <div class="group" style="margin-top:12px">
+            <div class="srow"><span class="nm">更新说明</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="nm">开源许可</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="nm">隐私政策</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+            <div class="srow"><span class="nm">诊断信息</span><span class="val">已关闭</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="note" style="text-align:center;padding-top:14px">连点版本号 5 次可显示开发者设置</div>
+          <div class="about-foot">数据保存在本机<br>不收集任何个人信息</div>
+        </div>
+      </div>
+      <div class="caption"><b>关于</b> · 版本、构建号、许可与隐私；开发者入口在此隐藏。</div>
+    </div>
+  </div>
+
+  <footer class="page">
+    静态界面预览 · 对应 ADR-0013 · 生成于 2026-11-19<br>
+    规则细节见 <code>docs/05-功能预览与复刻对照.md</code> 第 4.10–4.11 节。
+  </footer>
+
+</div>
+</body>
+</html>

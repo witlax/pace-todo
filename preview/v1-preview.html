@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V1.0 界面预览 · 任务待办工具</title>
+<style>
+  :root{
+    --bg:#F4F5F7;
+    --card:#FFFFFF;
+    --ink:#1F2328;
+    --muted:#6B7280;
+    --faint:#9CA3AF;
+    --line:#E5E7EB;
+    --blue:#185FA5;
+    --blue-soft:#E6F1FB;
+    --teal:#0F6E56;
+    --teal-soft:#E1F5EE;
+    --amber:#B45309;
+    --amber-soft:#FAEEDA;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 28px 72px;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  header.page{margin-bottom:36px}
+  .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--blue);font-weight:600;margin-bottom:10px}
+  h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{font-size:14px;line-height:1.75;color:var(--muted);max-width:760px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--faint)}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);display:inline-block}
+  .dot.teal{background:var(--teal)}
+  .dot.amber{background:var(--amber)}
+
+  h2.section{font-size:15px;font-weight:600;margin:44px 0 6px;letter-spacing:.01em}
+  p.section-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;max-width:820px}
+
+  .grid{display:flex;flex-wrap:wrap;gap:22px;justify-content:center}
+  .item{width:276px}
+  .caption{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+  .caption b{color:var(--ink);font-weight:600}
+
+  /* ---------- phone ---------- */
+  .phone{
+    width:276px;height:604px;background:var(--card);
+    border:7px solid #23262B;border-radius:36px;
+    display:flex;flex-direction:column;overflow:hidden;position:relative;
+  }
+  .statusbar{height:26px;flex:0 0 26px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:10px;color:var(--faint)}
+  .statusbar .right{display:flex;gap:4px;align-items:center}
+  .bar{width:12px;height:6px;border:1px solid var(--faint);border-radius:2px;position:relative}
+  .bar::after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:7px;background:var(--faint);border-radius:1px}
+
+  .appbar{flex:0 0 auto;padding:6px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .appbar .t{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+  .appbar .s{font-size:11px;color:var(--muted);margin-top:3px}
+  .appbar .acts{display:flex;gap:14px;padding-top:4px}
+  .ic{width:18px;height:18px;display:block;stroke:var(--muted);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+  .searchbar{margin:0 12px 4px;height:34px;border-radius:9px;background:#F1F2F4;display:flex;align-items:center;gap:7px;padding:0 10px;font-size:11.5px;color:#9AA0A8}
+  .searchbar svg{width:14px;height:14px;stroke:#9AA0A8;fill:none;stroke-width:1.7;stroke-linecap:round}
+  .body{flex:1 1 auto;overflow:hidden;padding:0 12px}
+  .group-label{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;padding:10px 4px 6px}
+  .group-label .n{color:var(--faint);font-weight:400;margin-left:4px}
+
+  .row{display:flex;align-items:flex-start;gap:10px;padding:9px 6px 11px;border-radius:10px}
+  .row + .row{border-top:1px solid #F3F4F6}
+  .check{width:19px;height:19px;border-radius:50%;border:1.6px solid #C9CDD4;flex:0 0 19px;margin-top:1px}
+  .check.done{background:var(--blue);border-color:var(--blue);position:relative}
+  .check.done::after{content:"";position:absolute;left:5px;top:3.5px;width:6px;height:3px;border-left:1.6px solid #fff;border-bottom:1.6px solid #fff;transform:rotate(-45deg)}
+  .row .main{flex:1;min-width:0}
+  .row .tt{font-size:13px;line-height:1.45;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row.done .tt{color:var(--faint);text-decoration:line-through}
+  .row .mt{display:flex;gap:6px;align-items:center;margin-top:3px;font-size:10.5px;color:var(--faint)}
+  .tag{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-soft);color:var(--blue)}
+  .tag.life{background:#F3F4F6;color:var(--muted)}
+  .row .when{font-size:11px;color:var(--muted);flex:0 0 auto;padding-top:1px}
+  .row .when.late{color:#C2410C}
+
+  .completed{display:flex;align-items:center;gap:8px;padding:12px 6px;font-size:11.5px;color:var(--faint);border-top:1px solid #F3F4F6}
+
+  /* fab + tabbar */
+  .fab{position:absolute;right:16px;bottom:74px;width:48px;height:48px;border-radius:16px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+  .fab svg{stroke:#fff;width:20px;height:20px}
+  .tabbar{flex:0 0 58px;height:58px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding-bottom:2px;background:var(--card)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;color:var(--faint);width:48px}
+  .tab svg{width:19px;height:19px;stroke:var(--faint)}
+  .tab.on{color:var(--blue)}
+  .tab.on svg{stroke:var(--blue)}
+
+  /* calendar */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg span{font-size:10.5px;padding:4px 9px;color:var(--muted)}
+  .seg span.on{background:var(--blue);color:#fff}
+  .weekdays{display:grid;grid-template-columns:repeat(7,1fr);font-size:10px;color:var(--faint);text-align:center;padding-bottom:4px}
+  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px 0}
+  .day{height:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;color:var(--ink)}
+  .day.mute{color:#D1D5DB}
+  .day.sel span:first-child{background:var(--blue);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .daydots{display:flex;gap:2px;height:4px;align-items:center}
+  .daydots i{width:3px;height:3px;border-radius:50%;background:var(--blue);display:block}
+  .daydots i.g{background:var(--teal)}
+  .daydots i.r{background:#C2410C}
+
+  /* detail */
+  .detail-top{display:flex;align-items:center;justify-content:space-between;padding:2px 6px 14px}
+  .detail-title{display:flex;gap:10px;padding:0 6px 14px;align-items:flex-start}
+  .detail-title .tt{font-size:16px;line-height:1.45;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;padding:0 6px 16px}
+  .chip{font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid var(--line);color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+  .chip b{font-weight:500;color:var(--ink)}
+  .chip.accent{border-color:#C7DDF3;background:var(--blue-soft);color:var(--blue)}
+  .sec-label{font-size:11px;color:var(--faint);font-weight:600;padding:12px 6px 6px;display:flex;justify-content:space-between}
+  .subtask{display:flex;gap:9px;align-items:center;padding:7px 6px;font-size:12.5px}
+  .subtask .check{width:16px;height:16px;flex:0 0 16px}
+  .subtask.done span{color:var(--faint);text-decoration:line-through}
+  .note{margin:6px;padding:10px 12px;background:#FAFAFA;border-radius:10px;font-size:11.5px;line-height:1.75;color:var(--muted)}
+  .note b{color:var(--ink);font-weight:600}
+  .detail-foot{position:absolute;left:0;right:0;bottom:0;padding:10px 14px 14px;border-top:1px solid var(--line);background:var(--card);display:flex;gap:8px}
+  .btn{flex:1;text-align:center;font-size:12.5px;padding:11px;border-radius:10px;font-weight:500}
+  .btn.primary{background:var(--blue);color:#fff}
+  .btn.ghost{border:1px solid var(--line);color:var(--muted)}
+
+  /* quick add */
+  .scrim{position:absolute;inset:0;background:rgba(31,35,40,.28)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:18px 18px 0 0;padding:14px 14px 18px}
+  .sheet .handle{width:34px;height:4px;border-radius:2px;background:#E5E7EB;margin:0 auto 14px}
+  .input{font-size:14px;color:var(--ink);padding:8px 2px 12px;border-bottom:1px solid var(--line)}
+  .caret{display:inline-block;width:1.5px;height:15px;background:var(--blue);vertical-align:-2px;margin-left:2px}
+  .quick{display:flex;gap:6px;margin-top:12px;flex-wrap:nowrap;overflow:hidden}
+  .q{font-size:10px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .q.on{background:var(--blue-soft);border-color:#C7DDF3;color:var(--blue)}
+  .picker{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:11.5px;color:var(--muted)}
+  .picker .right{display:flex;gap:12px;align-items:center}
+  .kb{margin-top:14px;background:#F3F4F6;border-radius:8px;padding:8px 8px 12px;display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .kb i{display:block;height:22px;background:#E5E7EB;border-radius:4px}
+  .kb i.w{grid-column:span 2}
+
+  /* focus */
+  .seg-tabs{display:flex;background:#F1F2F4;border-radius:9px;padding:3px;margin:0 12px 10px}
+  .seg-tabs div{flex:1;text-align:center;font-size:11.5px;padding:5px 0;border-radius:7px;color:var(--muted)}
+  .seg-tabs div.on{background:#fff;color:var(--ink);font-weight:500}
+  .focus-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:20px}
+  .focus-task{font-size:13px;color:var(--muted);margin-bottom:26px}
+  .ring{position:relative;width:196px;height:196px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .val .big{font-size:38px;font-weight:300;letter-spacing:-.02em}
+  .ring .val .sm{font-size:11px;color:var(--faint);margin-top:6px}
+  .focus-btns{display:flex;gap:10px;margin-top:34px;width:210px}
+  .focus-btns .btn{padding:11px 0}
+  .focus-hint{font-size:10.5px;color:var(--faint);margin-top:18px}
+
+  /* habits */
+  .habit{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+  .habit .h-top{display:flex;align-items:center;justify-content:space-between}
+  .habit .h-name{font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px}
+  .habit .h-ico{width:20px;height:20px;border-radius:6px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--teal)}
+  .habit .streak{font-size:11px;color:var(--teal);font-weight:500}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:11px}
+  .cell{height:24px;border-radius:6px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;font-size:9px;color:#D1D5DB}
+  .cell.f{background:var(--teal);color:#fff}
+  .cell.t{background:var(--teal-soft);color:var(--teal)}
+  .weeklabels{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;font-size:9px;color:var(--faint);text-align:center;margin-top:5px}
+
+  /* stats */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:2px 4px 6px}
+  .kpi{background:#FAFAFA;border:1px solid var(--line);border-radius:10px;padding:10px 8px}
+  .kpi .n{font-size:17px;font-weight:600;letter-spacing:-.02em}
+  .kpi .l{font-size:10px;color:var(--faint);margin-top:2px}
+  .heat{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;padding:4px 4px 0}
+  .heat i{display:block;height:12px;border-radius:2px;background:#EDF0F2}
+  .h1{background:#D3E9E3}.h2{background:#9FD5C6}.h3{background:#5DCAA5}.h4{background:var(--teal)}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:70px;padding:8px 6px 0}
+  .bars .b{flex:1;background:var(--blue-soft);border-radius:4px 4px 2px 2px;position:relative}
+  .bars .b span{position:absolute;left:0;right:0;bottom:-16px;text-align:center;font-size:9px;color:var(--faint)}
+  .bars .b.hi{background:#85B7EB}
+
+  /* desktop */
+  .desktop{width:100%;max-width:960px;height:512px;background:var(--card);border:1px solid #D9DCE1;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .dt-top{height:44px;flex:0 0 44px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+  .dt-top .left{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600}
+  .dt-search{width:220px;height:28px;border:1px solid var(--line);border-radius:7px;display:flex;align-items:center;padding:0 9px;font-size:11px;color:var(--faint);gap:6px}
+  .dt-new{background:var(--blue);color:#fff;font-size:11.5px;padding:7px 12px;border-radius:7px}
+  .dt-body{flex:1;display:flex;min-height:0}
+  .dt-side{width:172px;flex:0 0 172px;border-right:1px solid var(--line);padding:12px 10px;font-size:12px}
+  .dt-side .grp{font-size:10px;color:var(--faint);font-weight:600;margin:12px 6px 6px}
+  .dt-side .it{display:flex;align-items:center;justify-content:space-between;padding:7px 8px;border-radius:7px;color:var(--muted)}
+  .dt-side .it.on{background:var(--blue-soft);color:var(--blue);font-weight:500}
+  .dt-side .it .c{font-size:10px;color:var(--faint)}
+  .dt-list{width:318px;flex:0 0 318px;border-right:1px solid var(--line);padding:14px 12px;overflow:hidden}
+  .dt-list h3{font-size:15px;font-weight:600;margin-bottom:2px}
+  .dt-list .sub{font-size:10.5px;color:var(--faint);margin-bottom:10px}
+  .dt-detail{flex:1;padding:18px 20px;position:relative}
+  .dt-detail .ttl{font-size:16px;font-weight:600;margin-bottom:12px}
+  .dt-detail .line{height:1px;background:var(--line);margin:14px 0}
+  .dt-detail .lbl{font-size:10px;color:var(--faint);font-weight:600;margin-bottom:6px}
+  .dt-detail p{font-size:11.5px;line-height:1.8;color:var(--muted)}
+  .dt-detail .fake-input{margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:11px;color:var(--faint)}
+
+  /* annotation cards */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .k{font-size:11px;color:var(--blue);font-weight:600;letter-spacing:.04em;margin-bottom:8px}
+  .card h4{font-size:13.5px;font-weight:600;margin-bottom:8px}
+  .card p{font-size:12px;line-height:1.75;color:var(--muted)}
+  .card code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:#F3F4F6;padding:1px 5px;border-radius:4px}
+
+  footer.page{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.8}
+
+  @media (max-width:760px){
+    body{padding:24px 14px 48px}
+    .item{width:100%}
+    .phone{margin:0 auto}
+    .cards{grid-template-columns:1fr}
+    .desktop{height:auto}
+    .dt-body{flex-direction:column}
+    .dt-side,.dt-list{width:100%;flex:none;border-right:0;border-bottom:1px solid var(--line)}
+    .dt-detail{min-height:220px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <div class="eyebrow">V1.0 界面预览</div>
+    <h1>任务待办工具 · 关键界面</h1>
+    <p class="lede">这一版预览对应 <code>docs/05-功能预览与复刻对照.md</code> 的 V1.0 范围：三个可配置域（日历/习惯/备忘录）+ 今天与设置两个锚点，Android 与 Windows 同一套信息架构。所有界面为静态示意，用于确认信息层级与交互位置，不代表最终视觉。</p>
+    <div class="meta">
+      <span><i class="dot"></i>任务与排期</span>
+      <span><i class="dot teal"></i>习惯与打卡</span>
+      <span><i class="dot amber"></i>专注与计时</span>
+      <span>Android 4 Tab 可配 · Windows 三栏</span>
+    </div>
+  </header>
+
+  <h2 class="section">移动端 · 主流程</h2>
+  <p class="section-sub">从"看到今天"到"记下一条"，再到"处理完"，三个动作构成日常使用的全部。底部默认四个入口（可配置），清单与标签收进抽屉，设置承担"我的内容 + 偏好"。</p>
+
+  <div class="grid">
+
+    <!-- 1 今日 -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">11月19日 周四 · 4 项待办</div></div>
+          <div class="acts">
+            <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+            <svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+          </div>
+        </div>
+        <div class="searchbar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+          搜索任务、备忘录
+        </div>
+        <div class="body">
+          <div class="group-label">上午<span class="n">2</span></div>
+          <div class="row">
+            <span class="check"></span>
+            <div class="main"><div class="tt">写周报，汇总本周进展</div><div class="mt"><span class="tag">工作</span><span>预计 45 分钟</span></div></div>
+            <span class="when">09:30</span>
+          </div>
+          <div class="row">
+            <span class="check"></span>
+            <div class="main"><div class="tt">买菜：西红柿、鸡蛋</div><div class="mt"><span class="tag life">生活</span><span>清单 · 家务</span></div></div>
+            <span class="when">全天</span>
+          </div>
+          <div class="group-label">下午<span class="n">2</span></div>
+          <div class="row">
+            <span class="check"></span>
+            <div class="main"><div class="tt">电话会议：需求对齐</div><div class="mt"><span class="tag">工作</span><span>30 分钟</span></div></div>
+            <span class="when">14:00</span>
+          </div>
+          <div class="row">
+            <span class="check"></span>
+            <div class="main"><div class="tt">读《深度工作》30 页</div><div class="mt"><span class="tag life">成长</span></div></div>
+            <span class="when late">已逾期</span>
+          </div>
+          <div class="completed">
+            <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            已完成 3 项
+          </div>
+          <div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>今日</b> · 按时间分组，逾期用暖色标出；FAB 在拇指区，底部四域常驻。</div>
+    </div>
+
+    <!-- 2 快速添加 -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">11月19日 周四</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></div>
+        </div>
+        <div class="body">
+          <div class="group-label">上午</div>
+          <div class="row"><span class="check"></span><div class="main"><div class="tt">写周报，汇总本周进展</div></div><span class="when">09:30</span></div>
+          <div class="row"><span class="check"></span><div class="main"><div class="tt">买菜：西红柿、鸡蛋</div></div><span class="when">全天</span></div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="handle"></div>
+          <div class="input">给客户回邮件<span class="caret"></span></div>
+          <div class="quick">
+            <span class="q on">今天 18:00</span>
+            <span class="q">明天</span>
+            <span class="q">下周一</span>
+            <span class="q">自定义</span>
+          </div>
+          <div class="picker">
+            <span>收件箱</span>
+            <div class="right">
+              <span>旗标</span>
+              <span>提醒</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <div style="flex:0 0 38%;text-align:center;font-size:11.5px;padding:10px;border-radius:9px;border:1px solid var(--line);color:var(--muted)">添加备忘录</div>
+            <div style="flex:1;text-align:center;font-size:11.5px;padding:10px;border-radius:9px;background:var(--blue);color:#fff;font-weight:500">保存（回车）</div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><b>3 秒捕获</b> · 弹层升起即聚焦，日期用一条快捷 chips；不强迫选清单。</div>
+    </div>
+
+    <!-- 3 详情 -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="detail-top">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+        </div>
+        <div class="detail-title">
+          <span class="check" style="margin-top:4px"></span>
+          <div class="tt">写周报，汇总本周进展</div>
+        </div>
+        <div class="chips">
+          <span class="chip accent"><b>工作</b></span>
+          <span class="chip">今天 <b>18:00</b></span>
+          <span class="chip">中优先级</span>
+          <span class="chip">预计 <b>45 分钟</b></span>
+          <span class="chip">不重复</span>
+        </div>
+        <div class="sec-label"><span>子任务</span><span>2 / 3</span></div>
+        <div class="subtask done"><span class="check done"></span><span>整理本周完成的模块</span></div>
+        <div class="subtask done"><span class="check done"></span><span>列出下周风险</span></div>
+        <div class="subtask"><span class="check"></span><span>写一段总结给团队</span></div>
+        <div class="sec-label"><span>备注</span><span>Markdown</span></div>
+        <div class="note"><b>本周重点</b><br>1. 任务模块完成度 80%<br>2. 提醒可靠性待真机验证<br>3. 下周开始日历视图</div>
+        <div class="detail-foot">
+          <div class="btn ghost">加入今天</div>
+          <div class="btn primary">开始专注</div>
+        </div>
+      </div>
+      <div class="caption"><b>任务详情</b> · 全屏页，字段是一行 chip 点开即改；底部固定主操作。</div>
+    </div>
+
+    <!-- 4 日历 -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">2026 年 11 月</div><div class="s">本月完成 42 项</div></div>
+          <div class="seg"><span class="on">月</span><span>周</span></div>
+        </div>
+        <div class="body">
+          <div class="weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+          <div class="days">
+            <div class="day mute"><span>26</span></div><div class="day mute"><span>27</span></div><div class="day mute"><span>28</span></div><div class="day mute"><span>29</span></div><div class="day mute"><span>30</span></div><div class="day mute"><span>31</span></div><div class="day"><span>1</span></div>
+            <div class="day"><span>2</span><div class="daydots"><i></i></div></div><div class="day"><span>3</span><div class="daydots"><i></i><i class="g"></i></div></div><div class="day"><span>4</span></div><div class="day"><span>5</span><div class="daydots"><i></i></div></div><div class="day"><span>6</span></div><div class="day"><span>7</span><div class="daydots"><i class="g"></i></div></div><div class="day"><span>8</span></div>
+            <div class="day"><span>9</span><div class="daydots"><i></i></div></div><div class="day"><span>10</span><div class="daydots"><i></i></div></div><div class="day"><span>11</span></div><div class="day"><span>12</span><div class="daydots"><i class="r"></i></div></div><div class="day"><span>13</span><div class="daydots"><i></i></div></div><div class="day"><span>14</span></div><div class="day"><span>15</span><div class="daydots"><i class="g"></i></div></div>
+            <div class="day"><span>16</span><div class="daydots"><i></i></div></div><div class="day"><span>17</span><div class="daydots"><i></i></div></div><div class="day"><span>18</span><div class="daydots"><i></i><i class="g"></i></div></div><div class="day sel"><span>19</span><div class="daydots"><i></i><i></i><i class="g"></i></div></div><div class="day"><span>20</span></div><div class="day"><span>21</span></div><div class="day"><span>22</span></div>
+            <div class="day"><span>23</span><div class="daydots"><i></i></div></div><div class="day"><span>24</span></div><div class="day"><span>25</span><div class="daydots"><i></i></div></div><div class="day"><span>26</span></div><div class="day"><span>27</span><div class="daydots"><i></i></div></div><div class="day"><span>28</span></div><div class="day"><span>29</span></div>
+          </div>
+          <div class="group-label" style="border-top:1px solid var(--line);margin-top:6px">11月19日 · 3 项</div>
+          <div class="row"><span class="check"></span><div class="main"><div class="tt">写周报，汇总本周进展</div></div><span class="when">09:30</span></div>
+          <div class="row"><span class="check"></span><div class="main"><div class="tt">电话会议：需求对齐</div></div><span class="when">14:00</span></div>
+          <div class="row"><span class="check"></span><div class="main"><div class="tt">读《深度工作》30 页</div><div class="mt"><span class="tag life">成长</span></div></div><span class="when late">已逾期</span></div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>日历</b> · 月视图为主，任务点与逾期红点；下方直接处理当天任务，不必切页。</div>
+    </div>
+
+  </div>
+
+  <h2 class="section">移动端 · 首页专注与打卡</h2>
+  <p class="section-sub">专注与任务在首页并列切换，切回不中断计时；打卡一屏看到本周与连续天数。</p>
+
+  <div class="grid">
+
+    <!-- 5 专注（首页模式） -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">第 2 个番茄 · 共 25:00</div></div>
+          <svg class="ic" viewBox="0 0 24 24" style="margin-top:4px"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+        </div>
+        <div class="seg-tabs"><div>任务</div><div class="on">专注</div></div>
+        <div class="focus-wrap">
+          <div class="focus-task">写周报，汇总本周进展</div>
+          <div class="ring">
+            <svg width="196" height="196" viewBox="0 0 196 196">
+              <circle cx="98" cy="98" r="88" fill="none" stroke="#EEF0F2" stroke-width="8"/>
+              <circle cx="98" cy="98" r="88" fill="none" stroke="#185FA5" stroke-width="8" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="196"/>
+            </svg>
+            <div class="val"><div class="big">18:32</div><div class="sm">剩余 · 专注中</div></div>
+          </div>
+          <div class="focus-btns"><div class="btn ghost">暂停</div><div class="btn primary">结束</div></div>
+          <div class="focus-hint">切回任务不会中断计时</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>专注模式</b> · 与任务并列在首页顶部，切回不中断计时；运行条在其它页面常驻。</div>
+    </div>
+
+    <!-- 6 习惯 -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">习惯</div><div class="s">本月完成率 78%</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        </div>
+        <div class="body" style="padding-top:4px">
+          <div class="habit">
+            <div class="h-top">
+              <div class="h-name"><span class="h-ico">早</span>早起 7:00</div>
+              <div class="streak">连续 12 天</div>
+            </div>
+            <div class="week">
+              <span class="cell f">一</span><span class="cell f">二</span><span class="cell f">三</span><span class="cell f">四</span><span class="cell t">五</span><span class="cell"></span><span class="cell"></span>
+            </div>
+            <div class="weeklabels"><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span></div>
+          </div>
+          <div class="habit">
+            <div class="h-top">
+              <div class="h-name"><span class="h-ico">读</span>阅读 30 分钟</div>
+              <div class="streak">连续 5 天</div>
+            </div>
+            <div class="week">
+              <span class="cell f">一</span><span class="cell f">二</span><span class="cell f">三</span><span class="cell t">四</span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+            </div>
+            <div class="weeklabels"><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span></div>
+          </div>
+          <div class="habit">
+            <div class="h-top">
+              <div class="h-name"><span class="h-ico">动</span>运动（每周 3 次）</div>
+              <div class="streak">本周 2 / 3</div>
+            </div>
+            <div class="week">
+              <span class="cell f">一</span><span class="cell"></span><span class="cell f">三</span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+            </div>
+            <div class="weeklabels"><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span></div>
+          </div>
+          <div class="group-label" style="padding-top:14px">长按任意日期格可补卡</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>习惯</b> · 一张卡片就是一周：已打卡、今日待打、连续天数一屏可见。</div>
+    </div>
+
+    <!-- 7 统计 -->
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今日概览</div><div class="s">11月19日 · 第 47 周</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><path d="M4 18V9M10 18V5M16 18v-6M22 18V7"/></svg></div>
+        </div>
+        <div class="body">
+          <div class="kpis">
+            <div class="kpi"><div class="n">5</div><div class="l">完成任务</div></div>
+            <div class="kpi"><div class="n">1h50</div><div class="l">专注时长</div></div>
+            <div class="kpi"><div class="n">3/4</div><div class="l">习惯打卡</div></div>
+          </div>
+          <div class="group-label">最近 7 天完成</div>
+          <div class="bars">
+            <div class="b" style="height:38%"><span>四</span></div>
+            <div class="b" style="height:56%"><span>五</span></div>
+            <div class="b" style="height:30%"><span>六</span></div>
+            <div class="b" style="height:72%"><span>日</span></div>
+            <div class="b hi" style="height:88%"><span>一</span></div>
+            <div class="b" style="height:64%"><span>二</span></div>
+            <div class="b hi" style="height:80%"><span>三</span></div>
+          </div>
+          <div class="group-label" style="padding-top:26px">本年打卡热力</div>
+          <div class="heat">
+            <i></i><i class="h1"></i><i class="h2"></i><i class="h1"></i><i></i><i class="h3"></i><i class="h4"></i><i class="h2"></i><i class="h1"></i><i></i><i class="h2"></i><i class="h3"></i>
+            <i class="h1"></i><i class="h2"></i><i class="h4"></i><i class="h3"></i><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h2"></i><i class="h1"></i><i class="h3"></i><i class="h4"></i>
+            <i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h2"></i><i></i><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h3"></i><i class="h2"></i><i class="h1"></i>
+            <i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h3"></i><i class="h2"></i><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h3"></i><i class="h2"></i>
+            <i class="h2"></i><i class="h4"></i><i class="h3"></i><i class="h2"></i><i class="h1"></i><i class="h3"></i><i class="h4"></i><i class="h3"></i><i class="h2"></i><i class="h1"></i><i></i><i class="h1"></i>
+          </div>
+          <div class="group-label" style="padding-top:14px">本周专注分布</div>
+          <div class="row" style="padding-left:4px"><div class="main"><div class="tt" style="font-size:12px">工作 · 6h20m</div></div><span class="when">58%</span></div>
+          <div class="row" style="padding-left:4px"><div class="main"><div class="tt" style="font-size:12px">学习 · 3h10m</div></div><span class="when">29%</span></div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>今日概览</b> · 只保留三个指标 + 趋势；统计不做二级迷宫，滚到底就够。</div>
+    </div>
+
+  </div>
+
+  <h2 class="section">桌面端 · 三栏布局</h2>
+  <p class="section-sub">同一套信息架构，换成"导航 / 列表 / 详情"三栏。快捷键 <code>Ctrl+Shift+A</code> 全局捕获，关闭窗口最小化到托盘。</p>
+
+  <div class="desktop">
+    <div class="dt-top">
+      <div class="left">
+        <svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 9.5h8M8 14.5h5"/></svg>
+        任务
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="dt-search"><svg class="ic" style="width:13px;height:13px" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>搜索任务</div>
+        <div class="dt-new">新建任务</div>
+      </div>
+    </div>
+    <div class="dt-body">
+      <div class="dt-side">
+        <div class="it on"><span>今天</span><span class="c">4</span></div>
+        <div class="it"><span>最近 7 天</span><span class="c">12</span></div>
+        <div class="it"><span>收件箱</span><span class="c">3</span></div>
+        <div class="it"><span>已完成</span></div>
+        <div class="grp">清单</div>
+        <div class="it"><span>工作</span><span class="c">8</span></div>
+        <div class="it"><span>生活</span><span class="c">5</span></div>
+        <div class="it"><span>成长</span><span class="c">4</span></div>
+        <div class="grp">其他</div>
+        <div class="it"><span>日历</span></div>
+        <div class="it"><span>专注</span></div>
+        <div class="it"><span>习惯</span></div>
+      </div>
+      <div class="dt-list">
+        <h3>今天</h3>
+        <div class="sub">11月19日 周四 · 4 项待办</div>
+        <div class="group-label" style="padding-left:0">上午</div>
+        <div class="row" style="padding-left:0"><span class="check"></span><div class="main"><div class="tt">写周报，汇总本周进展</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">09:30</span></div>
+        <div class="row" style="padding-left:0"><span class="check"></span><div class="main"><div class="tt">买菜：西红柿、鸡蛋</div><div class="mt"><span class="tag life">生活</span></div></div><span class="when">全天</span></div>
+        <div class="group-label" style="padding-left:0">下午</div>
+        <div class="row" style="padding-left:0"><span class="check"></span><div class="main"><div class="tt">电话会议：需求对齐</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">14:00</span></div>
+        <div class="row" style="padding-left:0"><span class="check"></span><div class="main"><div class="tt">读《深度工作》30 页</div><div class="mt"><span class="tag life">成长</span></div></div><span class="when late">已逾期</span></div>
+        <div class="row" style="padding-left:0"><span class="check"></span><div class="main"><div class="tt">整理会议纪要并归档</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">16:30</span></div>
+        <div class="completed" style="padding-left:0">已完成 3 项</div>
+      </div>
+      <div class="dt-detail">
+        <div class="ttl">写周报，汇总本周进展</div>
+        <div class="chips" style="padding:0">
+          <span class="chip accent"><b>工作</b></span>
+          <span class="chip">今天 <b>18:00</b></span>
+          <span class="chip">中优先级</span>
+          <span class="chip">预计 <b>45 分钟</b></span>
+        </div>
+        <div class="line"></div>
+        <div class="lbl">子任务 · 2/3</div>
+        <div class="subtask" style="padding-left:0"><span class="check done"></span><span>整理本周完成的模块</span></div>
+        <div class="subtask" style="padding-left:0"><span class="check done"></span><span>列出下周风险</span></div>
+        <div class="subtask" style="padding-left:0"><span class="check"></span><span>写一段总结给团队</span></div>
+        <div class="line"></div>
+        <div class="lbl">备注</div>
+        <p>本周重点：任务模块完成度 80%，提醒可靠性待真机验证。下周开始日历视图。</p>
+        <div class="fake-input">添加备注…</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">三处关键交互约定</h2>
+  <p class="section-sub">这三件事决定了"用起来顺不顺"，比界面长相更重要。</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="k">手势</div>
+      <h4>左滑完成，长按多选</h4>
+      <p>短滑露出「完成 / 延期 / 专注」，长滑直接完成；长按进入多选或拖动排序。破坏性操作不弹确认框，改为 <code>3 秒撤销</code>。</p>
+    </div>
+    <div class="card">
+      <div class="k">反馈</div>
+      <h4>先执行，再给退路</h4>
+      <p>勾选有轻震动与动效，任务下沉淡出，底部出现撤销条。确认弹窗只留给"删除清单"这类不可逆操作。</p>
+    </div>
+    <div class="card">
+      <div class="k">返回</div>
+      <h4>按来路返回</h4>
+      <p>从通知进详情，返回回到原来的 Tab，而不是首页；杀进程重启恢复上次 Tab 与滚动位置。</p>
+    </div>
+  </div>
+
+  <footer class="page">
+    静态界面预览 · 对应 V1.0 范围 · 生成于 2026-11-19<br>
+    交互细则见 <code>docs/05-功能预览与复刻对照.md</code>，阶段计划见 <code>docs/06-阶段里程碑与验收.md</code>。
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+# Agent 本地记忆（保留在磁盘，不进仓库）
+/.workbuddy/
+
+# Flutter / Dart
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/build/
+app/.pub-cache/
+app/.pub/
+**/*.g.dart
+**/*.freezed.dart
+**/*.mocks.dart
+!app/lib/core/db/database.g.dart
+!**/drift_schemas/**
+
+# 测试用原生库（来自 Windows 构建产物，不入库）
+/app/sqlite3.dll
+/app/*.dll
+
+# Android
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+app/android/app/*.jks
+*.jks
+*.keystore
+app/android/app/debug/
+app/android/app/profile/
+app/android/app/release/
+**/*.jks
+**/*.keystore
+
+# Windows
+app/windows/flutter/ephemeral/
+app/build/windows/
+
+# IDE
+.idea/
+*.iml
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+
+# 系统与临时
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+/tmp/
+.env
+.env.*
+!.env.example
+
+# 本地敏感信息
+*.pem
+*.key
+secrets/
+
+# 模拟器/设备导出物
+bugreport-*.zip
+
+# 本地构建产物（不入库）
+/dist/
+
+# QA 临时截图
+preview/_*.png
+
+# Python 缓存（翻译工具）
+__pycache__/
+*.pyc

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>视图 · 四象限 · 备忘录 · 界面预览</title>
+<style>
+  :root{
+    --bg:#F4F5F7;--card:#FFFFFF;--ink:#1F2328;--muted:#6B7280;--faint:#9CA3AF;
+    --line:#E5E7EB;--blue:#185FA5;--blue-soft:#E6F1FB;
+    --high:#C2333A;--high-soft:#FCEBEB;
+    --mid:#B45309;--mid-soft:#FAEEDA;
+    --low:#185FA5;--low-soft:#E6F1FB;
+    --none:#6B7280;--none-soft:#F3F4F6;
+    --teal:#0F6E56;--teal-soft:#E1F5EE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;padding:40px 28px 72px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--blue);font-weight:600;margin-bottom:10px}
+  h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{font-size:14px;line-height:1.75;color:var(--muted);max-width:800px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--faint)}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .sw.h{background:var(--high)}.sw.m{background:var(--mid)}.sw.l{background:var(--low)}.sw.n{background:var(--none)}
+
+  h2.section{font-size:15px;font-weight:600;margin:44px 0 6px}
+  p.section-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;max-width:820px}
+
+  .grid{display:flex;flex-wrap:wrap;gap:22px;justify-content:center}
+  .item{width:276px}
+  .caption{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+  .caption b{color:var(--ink);font-weight:600}
+
+  .phone{width:276px;height:604px;background:var(--card);border:7px solid #23262B;border-radius:36px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+  .statusbar{height:26px;flex:0 0 26px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:10px;color:var(--faint)}
+  .statusbar .right{display:flex;gap:4px;align-items:center}
+  .bar{width:12px;height:6px;border:1px solid var(--faint);border-radius:2px;position:relative}
+  .bar::after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:7px;background:var(--faint);border-radius:1px}
+
+  .appbar{padding:6px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .appbar .t{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+  .appbar .s{font-size:11px;color:var(--muted);margin-top:3px}
+  .appbar .acts{display:flex;gap:14px;padding-top:4px}
+  .ic{width:18px;height:18px;display:block;stroke:var(--muted);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .viewbtn{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--blue);border:1px solid #C7DDF3;background:var(--blue-soft);padding:5px 9px;border-radius:8px;margin-top:2px}
+
+.searchbar{margin:0 12px 4px;height:34px;border-radius:9px;background:#F1F2F4;display:flex;align-items:center;gap:7px;padding:0 10px;font-size:11.5px;color:#9AA0A8}
+  .searchbar svg{width:14px;height:14px;stroke:#9AA0A8;fill:none;stroke-width:1.7;stroke-linecap:round}
+    .body{flex:1;overflow:hidden;padding:0 12px}
+  .group-label{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;padding:9px 4px 5px}
+
+  .row{display:flex;align-items:flex-start;gap:9px;padding:9px 6px 11px;border-radius:10px;position:relative}
+  .row + .row{border-top:1px solid #F3F4F6}
+  .row .bar-l{position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:2px}
+  .bar-l.h{background:var(--high)}.bar-l.m{background:var(--mid)}.bar-l.l{background:var(--low)}.bar-l.n{background:transparent}
+  .check{width:19px;height:19px;border-radius:50%;border:1.6px solid #C9CDD4;flex:0 0 19px;margin-top:1px;margin-left:4px}
+  .check.h{border-color:var(--high)}.check.m{border-color:var(--mid)}.check.l{border-color:var(--low)}
+  .check.done{background:var(--blue);border-color:var(--blue);position:relative}
+  .check.done::after{content:"";position:absolute;left:5px;top:3.5px;width:6px;height:3px;border-left:1.6px solid #fff;border-bottom:1.6px solid #fff;transform:rotate(-45deg)}
+  .row .main{flex:1;min-width:0}
+  .row .tt{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .mt{display:flex;gap:6px;align-items:center;margin-top:3px;font-size:10.5px;color:var(--faint)}
+  .tag{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-soft);color:var(--blue)}
+  .tag.life{background:#F3F4F6;color:var(--muted)}
+  .row .when{font-size:11px;color:var(--muted);flex:0 0 auto;padding-top:1px}
+  .row .when.late{color:#C2410C}
+
+  .tabbar{flex:0 0 58px;height:58px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;background:var(--card)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:var(--faint);width:50px}
+  .tab svg{width:19px;height:19px;stroke:var(--faint)}
+  .tab.on{color:var(--blue)}.tab.on svg{stroke:var(--blue)}
+
+  /* view sheet */
+  .scrim{position:absolute;inset:0;background:rgba(31,35,40,.28)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:18px 18px 0 0;padding:12px 14px 22px}
+  .handle{width:34px;height:4px;border-radius:2px;background:#E5E7EB;margin:0 auto 12px}
+  .sheet h4{font-size:13px;font-weight:600;margin-bottom:10px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .tile{border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center}
+  .tile.on{border-color:#C7DDF3;background:var(--blue-soft)}
+  .tile .th{height:26px;border-radius:6px;background:#F3F4F6;margin-bottom:6px;position:relative;overflow:hidden}
+  .tile.on .th{background:#D6E8F8}
+  .tile .th i{position:absolute;left:5px;top:5px;right:5px;height:3px;border-radius:2px;background:#DDE1E6;display:block}
+  .tile .th i+i{top:11px;width:60%}
+  .tile .th.q{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:4px;background:#F3F4F6}
+  .tile .th.q b{border-radius:2px;display:block}
+  .tile .nm{font-size:10.5px;color:var(--ink)}
+  .tile.on .nm{color:var(--blue);font-weight:500}
+  .tile .hint{font-size:9px;color:var(--faint);margin-top:2px}
+  .tile.off{opacity:.55}
+
+  /* quadrants */
+  .qwrap{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;padding:2px 4px 0;height:412px}
+  .q{border-radius:10px;padding:8px;position:relative;overflow:hidden}
+  .q1{background:rgba(194,51,58,.06)}
+  .q2{background:rgba(180,83,9,.07)}
+  .q3{background:rgba(24,95,165,.06)}
+  .q4{background:rgba(107,114,128,.05)}
+  .q .qh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .q .qn{font-size:11px;font-weight:600}
+  .q1 .qn{color:var(--high)}.q2 .qn{color:var(--mid)}.q3 .qn{color:var(--low)}.q4 .qn{color:var(--none)}
+  .q .qc{font-size:9.5px;color:var(--faint)}
+  .qcard{background:#fff;border-radius:6px;padding:5px 6px;margin-bottom:4px;position:relative;font-size:10.5px;line-height:1.4;box-shadow:0 0 0 1px rgba(31,35,40,.04)}
+  .qcard::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2.5px;border-radius:2px}
+  .qcard.h::before{background:var(--high)}
+  .qcard.m::before{background:var(--mid)}
+  .qcard.l::before{background:var(--low)}
+  .qcard .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:5px}
+  .qcard .d{font-size:9px;color:var(--faint);margin-top:2px;padding-left:5px}
+  .axis{position:absolute;font-size:9px;color:var(--faint)}
+  .legend{display:flex;gap:10px;font-size:9.5px;color:var(--faint);padding:8px 6px 0}
+  .legend i{display:inline-flex;align-items:center;gap:4px;font-style:normal}
+
+  /* importance dots */
+  .imp{display:flex;align-items:center;gap:7px;padding:8px 6px 2px}
+  .imp .lb{font-size:10px;color:var(--faint);margin-right:2px}
+  .dot{width:18px;height:18px;border-radius:50%;position:relative}
+  .dot.h{background:var(--high)}.dot.m{background:var(--mid)}.dot.l{background:var(--low)}.dot.n{background:#fff;border:1.5px solid #C9CDD4}
+  .dot.on{box-shadow:0 0 0 3px rgba(31,35,40,.08)}
+  .imp .txt{font-size:9.5px;color:var(--muted);margin-left:2px}
+
+  /* memo */
+  .memo-card{border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:10px;background:#fff}
+  .memo-img{height:96px;background:#EFF1F3;position:relative;display:flex;align-items:center;justify-content:center}
+  .memo-img svg{width:26px;height:26px;stroke:#B9BEC5;fill:none;stroke-width:1.4}
+  .memo-img .badge{position:absolute;right:6px;top:6px;font-size:9px;background:rgba(255,255,255,.9);color:var(--muted);padding:2px 5px;border-radius:4px}
+  .memo-body{padding:9px 10px 10px}
+  .memo-body .t{font-size:12.5px;font-weight:500;line-height:1.4}
+  .memo-body .p{font-size:10.5px;color:var(--muted);line-height:1.6;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .memo-meta{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:9.5px;color:var(--faint)}
+  .linkchip{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:var(--blue);background:var(--blue-soft);padding:2px 6px;border-radius:4px}
+  .linkchip i{width:9px;height:9px;border-radius:2px;background:var(--blue);opacity:.7;display:block}
+
+  .memo-detail{padding:0 16px;flex:1;overflow:hidden}
+  .memo-detail .mt-title{font-size:19px;font-weight:600;line-height:1.35;margin:2px 0 6px}
+  .memo-detail .mt-meta{font-size:10.5px;color:var(--faint);margin-bottom:12px}
+  .memo-detail .para{font-size:12px;line-height:1.85;color:#374151}
+  .memo-detail .para b{color:var(--ink)}
+  .img-block{height:112px;border-radius:10px;background:#EFF1F3;display:flex;align-items:center;justify-content:center;margin:10px 0;position:relative}
+  .img-block svg{width:24px;height:24px;stroke:#B9BEC5;fill:none;stroke-width:1.4}
+  .link-card{border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin:10px 0;display:flex;gap:8px;align-items:center}
+  .fav{width:26px;height:26px;border-radius:6px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--blue);font-weight:600}
+  .link-card .lt{font-size:11px;line-height:1.4}
+  .link-card .ld{font-size:9.5px;color:var(--faint);margin-top:2px}
+  .rel{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .rel .taskchip{font-size:10px;border:1px solid var(--line);border-radius:6px;padding:4px 7px;color:var(--muted);display:inline-flex;gap:5px;align-items:center}
+  .rel .taskchip::before{content:"";width:5px;height:5px;border-radius:50%;border:1.4px solid var(--mid)}
+
+  .divider{height:1px;background:var(--line);margin:12px 0}
+
+  /* desktop split */
+  .desktop{width:100%;max-width:960px;background:#fff;border:1px solid #D9DCE1;border-radius:14px;overflow:hidden}
+  .dt-top{height:44px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+  .dt-top .left{font-size:13px;font-weight:600;display:flex;gap:10px;align-items:center}
+  .dt-seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;font-size:10.5px}
+  .dt-seg span{padding:4px 9px;color:var(--muted)}
+  .dt-seg span.on{background:var(--blue);color:#fff}
+  .dt-body{display:flex;height:404px}
+  .pane{flex:1;min-width:0;padding:12px 12px 0;overflow:hidden}
+  .pane.cal{width:44%;flex:0 0 44%;border-left:1px solid var(--line)}
+  .handle-v{width:5px;flex:0 0 5px;background:#F3F4F6;position:relative}
+  .handle-v::after{content:"";position:absolute;top:50%;left:1px;width:3px;height:26px;background:#D1D5DB;border-radius:2px;transform:translateY(-50%)}
+  .pane h3{font-size:14px;font-weight:600;margin-bottom:2px}
+  .pane .sub{font-size:10px;color:var(--faint);margin-bottom:8px}
+  .mini-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:10px;text-align:center}
+  .mini-cal .wd{color:var(--faint);font-size:9px;padding:3px 0}
+  .mini-cal .d{height:26px;display:flex;align-items:center;justify-content:center;border-radius:5px;position:relative}
+  .mini-cal .d.sel{background:var(--blue);color:#fff}
+  .mini-cal .d i{position:absolute;bottom:3px;width:3px;height:3px;border-radius:50%;background:var(--blue)}
+  .mini-cal .d.sel i{background:#fff}
+  .cal-items{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}
+  .ci{display:flex;gap:7px;align-items:flex-start;padding:6px 2px;font-size:11px}
+  .ci .tm{font-size:9.5px;color:var(--faint);width:34px;flex:0 0 34px;padding-top:2px}
+  .ci .bx{flex:1;position:relative;padding-left:7px}
+  .ci .bx::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:2.5px;border-radius:2px;background:var(--blue)}
+  .ci.h .bx::before{background:var(--high)}
+  .ci.m .bx::before{background:var(--mid)}
+  .ci.l .bx::before{background:var(--low)}
+
+  footer.page{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.8}
+  @media (max-width:760px){
+    body{padding:24px 14px 48px}
+    .item{width:100%}.phone{margin:0 auto}
+    .dt-body{flex-direction:column;height:auto}
+    .pane.cal{width:100%;flex:none;border-left:0;border-top:1px solid var(--line)}
+    .handle-v{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">新增设计 · 界面预览</div>
+    <h1>视图切换 · 四象限 · 备忘录</h1>
+    <p class="lede">三项补充设计：视图按设备裁剪并可快速切换；四象限与重要性共用一套颜色语义；备忘录成为独立实体，可带图片与链接，并能被任务引用。设计依据见 ADR-0010 / 0011 / 0012。</p>
+    <div class="meta">
+      <span><i class="sw h"></i>高 = 必做</span>
+      <span><i class="sw m"></i>中 = 该做</span>
+      <span><i class="sw l"></i>低 = 有空做</span>
+      <span><i class="sw n"></i>无 = 未评估</span>
+    </div>
+  </header>
+
+  <h2 class="section">一 · 视图切换</h2>
+  <p class="section-sub">手机上点工具条的视图按钮，从底部升起磁贴；标"大屏"的视图不在手机出现，只在设置里可开。桌面端直接用分段控件。</p>
+
+  <div class="grid">
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">4 项待办 · 1 项逾期</div></div>
+          <div class="viewbtn">
+            <svg class="ic" style="width:12px;height:12px;stroke:var(--blue)" viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="7" rx="2"/><rect x="13.5" y="4" width="7" height="7" rx="2"/><rect x="3.5" y="13" width="7" height="7" rx="2"/><rect x="13.5" y="13" width="7" height="7" rx="2"/></svg>
+            清单
+          </div>
+        </div>
+        <div class="searchbar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+          搜索任务、备忘录
+        </div>
+        <div class="body">
+          <div class="row"><span class="bar-l h"></span><span class="check h"></span><div class="main"><div class="tt">写周报，汇总本周进展</div><div class="mt"><span class="tag">工作</span><span>45 分钟</span></div></div><span class="when">09:30</span></div>
+          <div class="row"><span class="bar-l m"></span><span class="check m"></span><div class="main"><div class="tt">给客户回邮件</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">11:00</span></div>
+          <div class="row"><span class="bar-l l"></span><span class="check l"></span><div class="main"><div class="tt">买菜：西红柿、鸡蛋</div><div class="mt"><span class="tag life">生活</span></div></div><span class="when">全天</span></div>
+          <div class="row"><span class="bar-l n"></span><span class="check"></span><div class="main"><div class="tt">读《深度工作》30 页</div><div class="mt"><span class="tag life">成长</span></div></div><span class="when late">已逾期</span></div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="handle"></div>
+          <h4>切换视图</h4>
+          <div class="tiles">
+            <div class="tile on"><div class="th"><i></i><i></i></div><div class="nm">清单</div></div>
+            <div class="tile"><div class="th q"><b style="background:rgba(194,51,58,.18)"></b><b style="background:rgba(180,83,9,.2)"></b><b style="background:rgba(24,95,165,.18)"></b><b style="background:rgba(107,114,128,.15)"></b></div><div class="nm">四象限</div></div>
+            <div class="tile"><div class="th"><i></i><i></i></div><div class="nm">日历</div></div>
+            <div class="tile off"><div class="th"><i></i><i></i><i></i></div><div class="nm">表格</div><div class="hint">大屏</div></div>
+            <div class="tile off"><div class="th"><i></i><i></i></div><div class="nm">看板</div><div class="hint">大屏</div></div>
+            <div class="tile off"><div class="th"><i></i></div><div class="nm">时间轴</div><div class="hint">大屏</div></div>
+          </div>
+          <div style="font-size:9.5px;color:var(--faint);margin-top:10px;line-height:1.6">标"大屏"的视图已在手机上隐藏，可在 设置 → 视图 中开启。</div>
+        </div>
+      </div>
+      <div class="caption"><b>视图切换</b> · 2×3 磁贴 + 当前视图高亮；大屏视图不在手机出现，避免"能点但难用"。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">四象限</div><div class="s">按重要性与截止时间自动排布</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></div>
+        </div>
+        <div class="qwrap">
+          <div class="q q1">
+            <div class="qh"><span class="qn">马上做</span><span class="qc">2</span></div>
+            <div class="qcard h"><div class="t">写周报，汇总本周进展</div><div class="d">今天 18:00</div></div>
+            <div class="qcard h"><div class="t">给客户回邮件</div><div class="d">今天 11:00</div></div>
+          </div>
+          <div class="q q2">
+            <div class="qh"><span class="qn">计划做</span><span class="qc">1</span></div>
+            <div class="qcard m"><div class="t">整理下季度路线图</div><div class="d">11月28日</div></div>
+          </div>
+          <div class="q q3">
+            <div class="qh"><span class="qn">尽快脱手</span><span class="qc">2</span></div>
+            <div class="qcard l"><div class="t">回填报销单</div><div class="d">今天 17:00</div></div>
+            <div class="qcard l"><div class="t">预约体检</div><div class="d">明天</div></div>
+          </div>
+          <div class="q q4">
+            <div class="qh"><span class="qn">有空再说</span><span class="qc">1</span></div>
+            <div class="qcard"><div class="t">整理旧照片</div><div class="d">无日期</div></div>
+          </div>
+        </div>
+        <div class="legend">
+          <i><span class="sw h"></span>高</i><i><span class="sw m"></span>中</i><i><span class="sw l"></span>低</i><i><span class="sw n"></span>无</i>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>四象限</b> · 纵轴重要性、横轴紧急度；卡片左侧色条仍是自身重要性，象限底色表达"这一格意味着什么"。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">新建任务</div><div class="s">收件箱</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+        </div>
+        <div class="body">
+          <div style="font-size:15px;padding:8px 6px 12px">给客户回邮件<span style="display:inline-block;width:1.5px;height:16px;background:var(--blue);vertical-align:-3px;margin-left:2px"></span></div>
+          <div class="imp">
+            <span class="lb">重要性</span>
+            <span class="dot h"></span>
+            <span class="dot m on"></span>
+            <span class="dot l"></span>
+            <span class="dot n"></span>
+            <span class="txt">中 · 该做</span>
+          </div>
+          <div class="divider"></div>
+          <div class="row" style="border:0;padding-left:6px"><div class="main"><div class="tt" style="color:var(--muted)">今天 18:00</div></div><span class="when">修改</span></div>
+          <div class="row" style="border:0;padding-left:6px"><div class="main"><div class="tt" style="color:var(--muted)">不重复</div></div><span class="when">修改</span></div>
+          <div class="row" style="border:0;padding-left:6px"><div class="main"><div class="tt" style="color:var(--muted)">提醒 · 提前 10 分钟</div></div><span class="when">修改</span></div>
+          <div class="divider"></div>
+          <div class="rel" style="padding-left:6px">
+            <span style="font-size:10px;color:var(--faint);margin-right:2px">备忘录</span>
+            <span class="taskchip">客户需求纪要</span>
+          </div>
+          <div style="font-size:10px;color:var(--faint);padding:8px 6px">引用模式：修改备忘录，所有关联任务同步</div>
+        </div>
+        <div style="padding:10px 14px 14px;border-top:1px solid var(--line);display:flex;gap:8px">
+          <div style="flex:1;text-align:center;font-size:12.5px;padding:11px;border-radius:10px;border:1px solid var(--line);color:var(--muted)">取消</div>
+          <div style="flex:1;text-align:center;font-size:12.5px;padding:11px;border-radius:10px;background:var(--blue);color:#fff;font-weight:500">保存</div>
+        </div>
+      </div>
+      <div class="caption"><b>重要性</b> · 一行四个色点，点选即生效，不用下拉；未选时为"无"。</div>
+    </div>
+  </div>
+
+  <h2 class="section">二 · 备忘录</h2>
+  <p class="section-sub">独立入口、可被多个任务引用。图片压缩后本地存储，链接只存卡片信息，不抓正文——离线也能完整打开。</p>
+
+  <div class="grid">
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">备忘录</div><div class="s">12 条 · 3 条置顶</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        </div>
+        <div class="body" style="padding-top:2px">
+          <div class="memo-card">
+            <div class="memo-img"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg><span class="badge">2 张</span><span style="position:absolute;left:7px;bottom:6px;font-size:9px;color:#8A9099">需求截图</span></div>
+            <div class="memo-body">
+              <div class="t">客户需求纪要 · 11月</div>
+              <div class="p">1. 首页需要支持按清单筛选<br>2. 提醒要能提前一天<br>3. 移动端希望支持左滑操作</div>
+              <div class="memo-meta"><span class="linkchip"><i></i>notion.so</span><span>已关联 2 个任务</span></div>
+            </div>
+          </div>
+          <div class="memo-card">
+            <div class="memo-body" style="padding-top:11px">
+              <div class="t">读书笔记：深度工作</div>
+              <div class="p">注意力是稀缺资源。把碎片时间集中成 90 分钟块，比分散使用效率高得多。</div>
+              <div class="memo-meta"><span>11月17日</span><span>已关联 1 个任务</span></div>
+            </div>
+          </div>
+          <div class="memo-card">
+            <div class="memo-body" style="padding-top:11px">
+              <div class="t">周末行程草稿</div>
+              <div class="p">周六上午去图书馆，下午买菜；周日留白。</div>
+              <div class="memo-meta"><span>11月16日</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>备忘录列表</b> · 有图先图，无图纯文；显示关联任务数量，让"这份资料在用"可见。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:2px 16px 12px">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          <div style="display:flex;gap:14px">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.5 6h6l-5 4 2 6-5.5-4-5.5 4 2-6-5-4h6z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+          </div>
+        </div>
+        <div class="memo-detail">
+          <div class="mt-title">客户需求纪要 · 11月</div>
+          <div class="mt-meta">11月19日 修改 · 已关联 2 个任务</div>
+          <div class="para">本次沟通确认了三件事：<b>筛选、提醒、左滑操作</b>。优先级按客户原话排序。</div>
+          <div class="img-block"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg><span style="position:absolute;left:8px;bottom:6px;font-size:9px;color:#8A9099">客户提供的界面截图 · 长按可查看大图</span></div>
+          <div class="para">参考原型：左上角入口改为可点切换，避免藏在抽屉里。</div>
+          <div class="link-card">
+            <div class="fav">N</div>
+            <div><div class="lt">需求评审记录 · 11/18</div><div class="ld">notion.so</div></div>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:10px;color:var(--faint);margin-bottom:4px">关联任务</div>
+          <div class="rel">
+            <span class="taskchip">给客户回邮件</span>
+            <span class="taskchip">更新需求文档</span>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><b>备忘录详情</b> · 图文混排 + 链接卡片；底部显示被哪些任务引用，点击可跳转。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:2px 16px 12px">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+        </div>
+        <div style="padding:0 16px">
+          <div style="display:flex;gap:9px;align-items:flex-start">
+            <span class="check" style="margin-top:4px"></span>
+            <div style="font-size:16px;font-weight:600;line-height:1.4">给客户回邮件</div>
+          </div>
+          <div class="imp" style="padding-left:0">
+            <span class="lb">重要性</span>
+            <span class="dot h"></span><span class="dot m on"></span><span class="dot l"></span><span class="dot n"></span>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px">
+            <span style="font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid #C7DDF3;background:var(--blue-soft);color:var(--blue)">工作</span>
+            <span style="font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid var(--line);color:var(--muted)">今天 <b style="font-weight:500;color:var(--ink)">18:00</b></span>
+            <span style="font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid var(--line);color:var(--muted)">提醒 17:50</span>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:10px;color:var(--faint);margin-bottom:6px;display:flex;justify-content:space-between"><span>备忘录</span><span>添加</span></div>
+          <div class="memo-card" style="margin-bottom:8px">
+            <div class="memo-body" style="padding:9px 10px">
+              <div class="t" style="font-size:11.5px">客户需求纪要 · 11月</div>
+              <div class="p" style="font-size:10px">本次沟通确认了三件事：筛选、提醒、左滑操作…</div>
+              <div class="memo-meta"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal)"></span>引用</span><span>2 张图</span></div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:10px;color:var(--faint);margin-bottom:6px">子任务 · 1/2</div>
+          <div style="display:flex;gap:9px;align-items:center;padding:5px 0;font-size:12px"><span class="check done" style="width:16px;height:16px;flex:0 0 16px"></span><span style="color:var(--faint);text-decoration:line-through">整理客户问题清单</span></div>
+          <div style="display:flex;gap:9px;align-items:center;padding:5px 0;font-size:12px"><span class="check" style="width:16px;height:16px;flex:0 0 16px"></span><span>写回复草稿</span></div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:10px 14px 14px;border-top:1px solid var(--line);background:#fff;display:flex;gap:8px">
+          <div style="flex:1;text-align:center;font-size:12.5px;padding:11px;border-radius:10px;border:1px solid var(--line);color:var(--muted)">加入今天</div>
+          <div style="flex:1;text-align:center;font-size:12.5px;padding:11px;border-radius:10px;background:var(--blue);color:#fff;font-weight:500">开始专注</div>
+        </div>
+      </div>
+      <div class="caption"><b>任务详情</b> · 重要性色点 + 备忘录卡片（标注"引用"），点开编辑的仍是同一份资料。</div>
+    </div>
+  </div>
+
+  <h2 class="section">三 · 大屏并排</h2>
+  <p class="section-sub">宽度 ≥1000 dp 时，主视图旁边可以再挂一个副视图。左边处理、右边看排期，拖动中间的分隔条调整比例。</p>
+
+  <div class="desktop">
+    <div class="dt-top">
+      <div class="left">任务 <span style="font-weight:400;color:var(--faint);font-size:11px">今天 · 4 项</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="dt-seg"><span class="on">清单</span><span>四象限</span><span>日历</span></div>
+        <div style="width:170px;height:26px;border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;padding:0 8px;font-size:10.5px;color:var(--faint)">搜索</div>
+      </div>
+    </div>
+    <div class="dt-body">
+      <div class="pane">
+        <h3>今天</h3>
+        <div class="sub">11月19日 周四</div>
+        <div class="row" style="padding-left:0"><span class="bar-l h"></span><span class="check h"></span><div class="main"><div class="tt">写周报，汇总本周进展</div><div class="mt"><span class="tag">工作</span><span>45 分钟</span></div></div><span class="when">09:30</span></div>
+        <div class="row" style="padding-left:0"><span class="bar-l m"></span><span class="check m"></span><div class="main"><div class="tt">给客户回邮件</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">11:00</span></div>
+        <div class="row" style="padding-left:0"><span class="bar-l l"></span><span class="check l"></span><div class="main"><div class="tt">买菜：西红柿、鸡蛋</div><div class="mt"><span class="tag life">生活</span></div></div><span class="when">全天</span></div>
+        <div class="row" style="padding-left:0"><span class="bar-l n"></span><span class="check"></span><div class="main"><div class="tt">读《深度工作》30 页</div><div class="mt"><span class="tag life">成长</span></div></div><span class="when late">已逾期</span></div>
+        <div class="row" style="padding-left:0"><span class="bar-l m"></span><span class="check m"></span><div class="main"><div class="tt">整理会议纪要并归档</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">16:30</span></div>
+      </div>
+      <div class="handle-v"></div>
+      <div class="pane cal">
+        <h3>11 月</h3>
+        <div class="sub">本月完成 42 项</div>
+        <div class="mini-cal">
+          <span class="wd">一</span><span class="wd">二</span><span class="wd">三</span><span class="wd">四</span><span class="wd">五</span><span class="wd">六</span><span class="wd">日</span>
+          <span class="d" style="color:#D1D5DB">26</span><span class="d" style="color:#D1D5DB">27</span><span class="d" style="color:#D1D5DB">28</span><span class="d" style="color:#D1D5DB">29</span><span class="d" style="color:#D1D5DB">30</span><span class="d" style="color:#D1D5DB">31</span><span class="d">1</span>
+          <span class="d">2<i></i></span><span class="d">3<i></i></span><span class="d">4</span><span class="d">5<i></i></span><span class="d">6</span><span class="d">7</span><span class="d">8</span>
+          <span class="d">9<i></i></span><span class="d">10<i></i></span><span class="d">11</span><span class="d">12<i></i></span><span class="d">13<i></i></span><span class="d">14</span><span class="d">15</span>
+          <span class="d">16<i></i></span><span class="d">17<i></i></span><span class="d">18<i></i></span><span class="d sel">19<i></i></span><span class="d">20</span><span class="d">21</span><span class="d">22</span>
+          <span class="d">23<i></i></span><span class="d">24</span><span class="d">25<i></i></span><span class="d">26</span><span class="d">27<i></i></span><span class="d">28</span><span class="d">29</span>
+        </div>
+        <div class="cal-items">
+          <div class="ci h"><span class="tm">09:30</span><div class="bx">写周报，汇总本周进展</div></div>
+          <div class="ci m"><span class="tm">11:00</span><div class="bx">给客户回邮件</div></div>
+          <div class="ci"><span class="tm">全天</span><div class="bx">买菜：西红柿、鸡蛋</div></div>
+          <div class="ci m"><span class="tm">16:30</span><div class="bx">整理会议纪要并归档</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page">
+    静态界面预览 · 对应 V0.2 与 V0.6 新增范围 · 生成于 2026-11-19<br>
+    设计依据：<code>docs/adr/0010-view-registry-and-visibility.md</code>、
+    <code>0011-memo-as-first-class-entity.md</code>、<code>0012-importance-color-and-quadrants.md</code>。
+  </footer>
+
+</div>
+</body>
+</html>

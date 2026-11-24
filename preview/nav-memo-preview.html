@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可配置导航 · 首页专注 · 备忘录呈现</title>
+<style>
+  :root{
+    --bg:#F4F5F7;--card:#FFFFFF;--ink:#1F2328;--muted:#6B7280;--faint:#9CA3AF;
+    --line:#E5E7EB;--blue:#185FA5;--blue-soft:#E6F1FB;
+    --high:#C2333A;--mid:#B45309;--low:#185FA5;--none:#6B7280;
+    --teal:#0F6E56;--teal-soft:#E1F5EE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;padding:40px 28px 72px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--blue);font-weight:600;margin-bottom:10px}
+  h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{font-size:14px;line-height:1.75;color:var(--muted);max-width:800px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--faint)}
+
+  h2.section{font-size:15px;font-weight:600;margin:44px 0 6px}
+  p.section-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;max-width:820px}
+  .grid{display:flex;flex-wrap:wrap;gap:22px;justify-content:center}
+  .item{width:276px}
+  .caption{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+  .caption b{color:var(--ink);font-weight:600}
+
+  .phone{width:276px;height:604px;background:var(--card);border:7px solid #23262B;border-radius:36px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+  .statusbar{height:26px;flex:0 0 26px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:10px;color:var(--faint)}
+  .statusbar .right{display:flex;gap:4px;align-items:center}
+  .bar{width:12px;height:6px;border:1px solid var(--faint);border-radius:2px;position:relative}
+  .bar::after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:7px;background:var(--faint);border-radius:1px}
+
+  .appbar{padding:6px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .appbar .t{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+  .appbar .s{font-size:11px;color:var(--muted);margin-top:3px}
+  .appbar .acts{display:flex;gap:13px;padding-top:4px}
+  .ic{width:18px;height:18px;display:block;stroke:var(--muted);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+  .seg-tabs{display:flex;background:#F1F2F4;border-radius:9px;padding:3px;margin:0 12px 10px}
+  .seg-tabs div{flex:1;text-align:center;font-size:11.5px;padding:5px 0;border-radius:7px;color:var(--muted)}
+  .seg-tabs div.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+
+  .searchbar{margin:0 12px 4px;height:34px;border-radius:9px;background:#F1F2F4;display:flex;align-items:center;gap:7px;padding:0 10px;font-size:11.5px;color:#9AA0A8}
+  .searchbar svg{width:14px;height:14px;stroke:#9AA0A8;fill:none;stroke-width:1.7;stroke-linecap:round}
+
+  .body{flex:1;overflow:hidden;padding:0 12px}
+  .group-label{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;padding:9px 4px 5px}
+  .row{display:flex;align-items:flex-start;gap:9px;padding:9px 6px 11px;position:relative}
+  .row+.row{border-top:1px solid #F3F4F6}
+  .bar-l{position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:2px}
+  .bar-l.h{background:var(--high)}.bar-l.m{background:var(--mid)}.bar-l.l{background:var(--low)}
+  .check{width:19px;height:19px;border-radius:50%;border:1.6px solid #C9CDD4;flex:0 0 19px;margin-top:1px;margin-left:4px}
+  .check.h{border-color:var(--high)}.check.m{border-color:var(--mid)}.check.l{border-color:var(--low)}
+  .row .main{flex:1;min-width:0}
+  .row .tt{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .mt{display:flex;gap:6px;align-items:center;margin-top:3px;font-size:10.5px;color:var(--faint)}
+  .tag{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-soft);color:var(--blue)}
+  .tag.life{background:#F3F4F6;color:var(--muted)}
+  .when{font-size:11px;color:var(--muted);flex:0 0 auto;padding-top:1px}
+  .when.late{color:#C2410C}
+  .fab{position:absolute;right:16px;bottom:72px;width:48px;height:48px;border-radius:16px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+  .fab svg{stroke:#fff;width:20px;height:20px;fill:none;stroke-width:2;stroke-linecap:round}
+
+  .tabbar{flex:0 0 56px;height:56px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;background:var(--card)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;color:var(--faint);width:60px}
+  .tab svg{width:18px;height:18px;stroke:var(--faint);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .tab.on{color:var(--blue)}.tab.on svg{stroke:var(--blue)}
+
+  /* focus mode */
+  .focus{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:14px}
+  .focus .ft{font-size:12.5px;color:var(--muted);margin-bottom:22px}
+  .ring{position:relative;width:190px;height:190px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .big{font-size:36px;font-weight:300;letter-spacing:-.02em}
+  .ring .sm{font-size:10.5px;color:var(--faint);margin-top:6px}
+  .fbtns{display:flex;gap:9px;margin-top:28px;width:200px}
+  .btn{flex:1;text-align:center;font-size:12px;padding:10px;border-radius:9px}
+  .btn.ghost{border:1px solid var(--line);color:var(--muted)}
+  .btn.primary{background:var(--blue);color:#fff;font-weight:500}
+  .fhint{font-size:10px;color:var(--faint);margin-top:16px}
+
+  /* settings nav config */
+  .set-body{flex:1;overflow:hidden;padding:0 12px}
+  .sec{font-size:10px;color:var(--faint);font-weight:600;letter-spacing:.06em;padding:9px 6px 5px}
+  .previewbar{background:#F1F2F4;border-radius:11px;padding:8px 4px;display:flex;align-items:center;justify-content:space-around;margin-bottom:6px}
+  .pitem{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;color:#8A9099;position:relative;padding:2px 4px}
+  .pitem svg{width:16px;height:16px;stroke:#8A9099;fill:none;stroke-width:1.6;stroke-linecap:round}
+  .pitem.fixed{color:var(--muted)}
+  .pitem .lock{position:absolute;top:-3px;right:-2px;width:9px;height:9px;stroke:#B9BEC5;fill:none;stroke-width:1.4}
+  .group{background:#FAFAFA;border:1px solid #F0F1F3;border-radius:11px;overflow:hidden}
+  .nrow{display:flex;align-items:center;gap:9px;padding:9px 10px;font-size:12px}
+  .nrow+.nrow{border-top:1px solid #F0F1F3}
+  .nrow .nm{flex:1}
+  .nrow .sub{font-size:9px;color:var(--faint);margin-top:1px}
+  .sw{width:32px;height:19px;border-radius:10px;background:#DDE1E6;position:relative;flex:0 0 32px}
+  .sw::after{content:"";position:absolute;left:2px;top:2px;width:15px;height:15px;border-radius:50%;background:#fff}
+  .sw.on{background:var(--blue)}
+  .sw.on::after{left:15px}
+  .drag{width:12px;height:12px;stroke:#C9CDD4;fill:none;stroke-width:1.6;stroke-linecap:round}
+  .note{font-size:9.5px;color:var(--faint);line-height:1.6;padding:6px 6px 0}
+
+  /* memo grid */
+  .toolrow{display:flex;gap:6px;padding:0 4px 6px;align-items:center}
+  .chip-s{font-size:9.5px;color:var(--muted);border:1px solid var(--line);border-radius:11px;padding:3px 8px;display:inline-flex;align-items:center;gap:4px}
+  .chip-s.on{background:var(--blue-soft);border-color:#C7DDF3;color:var(--blue)}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 2px}
+  .mcard{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;position:relative}
+  .mcard .thumb{height:64px;background:#EFF1F3;position:relative;display:flex;align-items:center;justify-content:center}
+  .mcard .thumb svg{width:18px;height:18px;stroke:#B9BEC5;fill:none;stroke-width:1.4}
+  .mcard .thumb.txt{background:#F7F8F9}
+  .mcard .ib{position:absolute;left:0;top:7px;bottom:7px;width:2.5px;border-radius:2px}
+  .ib.h{background:var(--high)}.ib.m{background:var(--mid)}.ib.l{background:var(--low)}
+  .mcard .mb{padding:6px 7px 7px}
+  .mcard .mt{font-size:10.5px;line-height:1.4;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .mcard .mm{font-size:8.5px;color:var(--faint);margin-top:3px}
+  .pin{position:absolute;right:5px;top:5px;background:rgba(255,255,255,.92);border-radius:4px;padding:1px 4px;font-size:8px;color:var(--mid)}
+
+  /* memo list */
+  .mrow{display:flex;gap:8px;padding:9px 4px;position:relative}
+  .mrow+.mrow{border-top:1px solid #F3F4F6}
+  .mrow .th{width:38px;height:38px;border-radius:7px;background:#EFF1F3;flex:0 0 38px;display:flex;align-items:center;justify-content:center}
+  .mrow .th svg{width:14px;height:14px;stroke:#B9BEC5;fill:none;stroke-width:1.4}
+  .mrow .mc{flex:1;min-width:0}
+  .mrow .mt{font-size:12px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mrow .mp{font-size:9.5px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mrow .mm{font-size:8.5px;color:var(--faint);margin-top:3px;display:flex;gap:7px}
+  .mrow .bar-l{top:9px;bottom:9px}
+
+  /* sort sheet */
+  .scrim{position:absolute;inset:0;background:rgba(31,35,40,.28)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:14px 16px 18px}
+  .handle{width:34px;height:4px;border-radius:2px;background:#E5E7EB;margin:0 auto 12px}
+  .sheet h4{font-size:12.5px;font-weight:600;margin-bottom:8px}
+  .opt{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;font-size:12px;border-bottom:1px solid #F6F7F8}
+  .opt .rd{width:15px;height:15px;border-radius:50%;border:1.5px solid #D1D5DB}
+  .opt.on .rd{border-color:var(--blue);border-width:4px}
+  .opt.on{color:var(--blue);font-weight:500}
+  .srow{display:flex;align-items:center;justify-content:space-between;padding:11px 2px 2px;font-size:11.5px;color:var(--muted)}
+
+  footer.page{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.8}
+  @media (max-width:760px){body{padding:24px 14px 48px}.item{width:100%}.phone{margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">导航可配置 · 界面预览</div>
+    <h1>可配置 Tab · 首页专注 · 备忘录双呈现</h1>
+    <p class="lede">底部导航不再是固定五项：今天与设置固定，中间最多三个位置由你勾选并排序。专注从 Tab 移到首页顶部，作为"任务 / 专注"模式切换；备忘录可加入 Tab，并提供列表与卡片两种呈现、四种排序。依据 ADR-0014。</p>
+    <div class="meta"><span>默认 4 个 Tab</span><span>中间位可 0–3 个</span><span>专注有运行条</span><span>备忘录双视图</span></div>
+  </header>
+
+  <h2 class="section">一 · 首页的两种模式</h2>
+  <p class="section-sub">专注不再是"另一个页面"。它和任务并列在首页顶部，切换时列表位置、筛选都保留；计时在跑时，任何时候都能从底部运行条回去。</p>
+
+  <div class="grid">
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">4 项待办 · 1 项逾期</div></div>
+          <svg class="ic" viewBox="0 0 24 24" style="margin-top:4px"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+        </div>
+        <div class="seg-tabs"><div class="on">任务</div><div>专注</div></div>
+        <div class="searchbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>搜索任务、备忘录</div>
+        <div class="body">
+          <div class="group-label">上午</div>
+          <div class="row"><span class="bar-l h"></span><span class="check h"></span><div class="main"><div class="tt">写周报，汇总本周进展</div><div class="mt"><span class="tag">工作</span><span>45 分钟</span></div></div><span class="when">09:30</span></div>
+          <div class="row"><span class="bar-l m"></span><span class="check m"></span><div class="main"><div class="tt">给客户回邮件</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">11:00</span></div>
+          <div class="row"><span class="bar-l l"></span><span class="check l"></span><div class="main"><div class="tt">买菜：西红柿、鸡蛋</div><div class="mt"><span class="tag life">生活</span></div></div><span class="when">全天</span></div>
+          <div class="group-label">下午</div>
+          <div class="row"><span class="bar-l h"></span><span class="check h"></span><div class="main"><div class="tt">电话会议：需求对齐</div><div class="mt"><span class="tag">工作</span></div></div><span class="when">14:00</span></div>
+        </div>
+        <div class="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>任务模式</b> · 顶部「任务 / 专注」切换；默认四个 Tab，专注不在其中。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">今天</div><div class="s">第 2 个番茄 · 共 25:00</div></div>
+          <svg class="ic" viewBox="0 0 24 24" style="margin-top:4px"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+        </div>
+        <div class="seg-tabs"><div>任务</div><div class="on">专注</div></div>
+        <div class="focus">
+          <div class="ft">写周报，汇总本周进展</div>
+          <div class="ring">
+            <svg width="190" height="190" viewBox="0 0 190 190">
+              <circle cx="95" cy="95" r="85" fill="none" stroke="#EEF0F2" stroke-width="8"/>
+              <circle cx="95" cy="95" r="85" fill="none" stroke="#185FA5" stroke-width="8" stroke-linecap="round" stroke-dasharray="534" stroke-dashoffset="189"/>
+            </svg>
+            <div class="val"><div class="big">18:32</div><div class="sm">剩余 · 专注中</div></div>
+          </div>
+          <div class="fbtns"><div class="btn ghost">暂停</div><div class="btn primary">结束</div></div>
+          <div class="fhint">切回任务不会中断计时</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>专注模式</b> · 同一页切换，切回任务不中断计时；运行条在其它页面常驻。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar"><div><div class="t">导航栏</div><div class="s">最多 5 个 · 仅本设备</div></div></div>
+        <div class="set-body">
+          <div class="sec">当前顺序（可拖动）</div>
+          <div class="previewbar">
+            <div class="pitem fixed">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span>
+            </div>
+            <div class="pitem">
+              <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>日历</span>
+            </div>
+            <div class="pitem">
+              <svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span>
+            </div>
+            <div class="pitem fixed">
+              <svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span>
+            </div>
+          </div>
+          <div class="note">长按任一中间项可拖动排序；今天与设置固定，不可移除。</div>
+
+          <div class="sec">中间项（最多 3 个）</div>
+          <div class="group">
+            <div class="nrow"><svg class="drag" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg><div class="nm">日历<div class="sub">月/周视图</div></div><span class="sw on"></span></div>
+            <div class="nrow"><svg class="drag" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg><div class="nm">习惯<div class="sub">打卡与热力</div></div><span class="sw on"></span></div>
+            <div class="nrow"><svg class="drag" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg><div class="nm">备忘录<div class="sub">列表或卡片</div></div><span class="sw"></span></div>
+          </div>
+          <div class="note">专注已移到首页顶部，不再占用导航位。<br>关闭某项不会删除任何数据。</div>
+
+          <div class="sec">备忘录默认呈现</div>
+          <div class="group"><div class="nrow"><div class="nm">卡片（网格）</div><span class="sw on"></span></div></div>
+        </div>
+      </div>
+      <div class="caption"><b>导航栏配置</b> · 实时预览 + 勾选 + 拖动排序；关掉只影响显示。</div>
+    </div>
+  </div>
+
+  <h2 class="section">二 · 备忘录的两种呈现</h2>
+  <p class="section-sub">列表用来"找一条"，卡片用来"看素材"。四种排序：添加时间、更新时间、重要性、标题；置顶永远优先。</p>
+
+  <div class="grid">
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">备忘录</div><div class="s">12 条 · 3 条置顶</div></div>
+          <div class="acts">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M7 4v13M7 17l-3-3M7 17l3-3M17 20V7M17 7l-3 3M17 7l3 3"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" style="stroke:var(--blue)"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>
+            <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+        </div>
+        <div class="body" style="padding-top:0">
+          <div class="toolrow"><span class="chip-s on">卡片视图</span><span class="chip-s">按添加时间</span></div>
+          <div class="cards">
+            <div class="mcard">
+              <div class="thumb"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg></div>
+              <span class="ib h"></span>
+              <div class="mb"><div class="mt">客户需求纪要 · 11月</div><div class="mm">置顶 · 2 张图 · 2 个任务</div></div>
+            </div>
+            <div class="mcard">
+              <div class="thumb txt"><svg viewBox="0 0 24 24"><path d="M6 4h9l4 4v12H6z"/><path d="M15 4v4h4"/></svg></div>
+              <span class="ib m"></span>
+              <div class="mb"><div class="mt">读书笔记：深度工作</div><div class="mm">11月17日 · 1 个任务</div></div>
+            </div>
+            <div class="mcard">
+              <div class="thumb txt"><svg viewBox="0 0 24 24"><path d="M6 4h9l4 4v12H6z"/><path d="M15 4v4h4"/></svg></div>
+              <span class="ib l"></span>
+              <div class="mb"><div class="mt">周末行程草稿</div><div class="mm">11月16日</div></div>
+            </div>
+            <div class="mcard">
+              <div class="thumb"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg></div>
+              <span class="ib"></span>
+              <div class="mb"><div class="mt">会议白板拍照</div><div class="mm">11月14日</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab on"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>备忘录</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>卡片视图</b> · 图片优先、两列；左缘色条表示重要性，"置顶"角标独立。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">备忘录</div><div class="s">12 条 · 按重要性</div></div>
+          <div class="acts">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M7 4v13M7 17l-3-3M7 17l3-3M17 20V7M17 7l-3 3M17 7l3 3"/></svg>
+            <svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M4 11h16M4 16h10M4 21h10"/></svg>
+            <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+        </div>
+        <div class="body" style="padding-top:0">
+          <div class="toolrow"><span class="chip-s">列表视图</span><span class="chip-s on">按重要性</span></div>
+          <div class="mrow">
+            <span class="bar-l h"></span>
+            <div class="th"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg></div>
+            <div class="mc"><div class="mt">客户需求纪要 · 11月</div><div class="mp">本次沟通确认了三件事：筛选、提醒、左滑…</div><div class="mm"><span>2 张图</span><span>2 个任务</span></div></div>
+          </div>
+          <div class="mrow">
+            <span class="bar-l m"></span>
+            <div class="th"><svg viewBox="0 0 24 24"><path d="M6 4h9l4 4v12H6z"/><path d="M15 4v4h4"/></svg></div>
+            <div class="mc"><div class="mt">读书笔记：深度工作</div><div class="mp">注意力是稀缺资源，把碎片时间集中成 90 分钟块…</div><div class="mm"><span>11月17日</span><span>1 个任务</span></div></div>
+          </div>
+          <div class="mrow">
+            <span class="bar-l l"></span>
+            <div class="th"><svg viewBox="0 0 24 24"><path d="M6 4h9l4 4v12H6z"/><path d="M15 4v4h4"/></svg></div>
+            <div class="mc"><div class="mt">周末行程草稿</div><div class="mp">周六上午图书馆，下午买菜；周日留白。</div><div class="mm"><span>11月16日</span></div></div>
+          </div>
+          <div class="mrow">
+            <div class="th"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg></div>
+            <div class="mc"><div class="mt">会议白板拍照</div><div class="mp">架构草图，待整理成文档。</div><div class="mm"><span>11月14日</span></div></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>今天</span></div>
+          <div class="tab on"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>备忘录</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l4 4L19.5 6"/></svg><span>习惯</span></div>
+          <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 16h3M11 16h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="16" r="2"/></svg><span>设置</span></div>
+        </div>
+      </div>
+      <div class="caption"><b>列表视图</b> · 40 dp 缩略图 + 一行摘要；按重要性排序时色条从高到低。</div>
+    </div>
+
+    <div class="item">
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span class="right"><span>5G</span><span class="bar"></span></span></div>
+        <div class="appbar">
+          <div><div class="t">备忘录</div><div class="s">12 条 · 按重要性</div></div>
+          <div class="acts"><svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M4 11h16M4 16h10M4 21h10"/></svg><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        </div>
+        <div class="body" style="padding-top:0">
+          <div class="toolrow"><span class="chip-s">列表视图</span><span class="chip-s on">按重要性</span></div>
+          <div class="mrow"><span class="bar-l h"></span><div class="th"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg></div><div class="mc"><div class="mt">客户需求纪要 · 11月</div><div class="mp">本次沟通确认了三件事…</div></div></div>
+          <div class="mrow"><span class="bar-l m"></span><div class="th"><svg viewBox="0 0 24 24"><path d="M6 4h9l4 4v12H6z"/><path d="M15 4v4h4"/></svg></div><div class="mc"><div class="mt">读书笔记：深度工作</div><div class="mp">注意力是稀缺资源…</div></div></div>
+          <div class="mrow"><span class="bar-l l"></span><div class="th"><svg viewBox="0 0 24 24"><path d="M6 4h9l4 4v12H6z"/><path d="M15 4v4h4"/></svg></div><div class="mc"><div class="mt">周末行程草稿</div><div class="mp">周六上午图书馆…</div></div></div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="handle"></div>
+          <h4>排序方式</h4>
+          <div class="opt"><span>添加时间</span><span class="rd"></span></div>
+          <div class="opt"><span>更新时间</span><span class="rd"></span></div>
+          <div class="opt on" style="border:0"><span>重要性</span><span class="rd"></span></div>
+          <div class="opt" style="border:0"><span>标题</span><span class="rd"></span></div>
+          <div class="srow"><span>置顶始终优先</span><span class="sw on"></span></div>
+        </div>
+      </div>
+      <div class="caption"><b>排序</b> · 四种排序 + 置顶优先开关；呈现与排序各自记忆。</div>
+    </div>
+  </div>
+
+  <footer class="page">
+    静态界面预览 · 对应 ADR-0014 · 生成于 2026-11-19<br>
+    规则见 <code>docs/05-功能预览与复刻对照.md</code> 第 4.1 / 4.11 / 6.6 节。
+  </footer>
+
+</div>
+</body>
+</html>
