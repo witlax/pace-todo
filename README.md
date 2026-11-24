@@ -125,5 +125,5 @@ is not wrapped in `tr()` / `trf()`.
 
 ## 致谢
 
-交互与信息架构参考了思源笔记的 Pinch 插件、滴答清单、指尖时光与朝暮计划；
+交互与信息架构参考了思源笔记的 Pinch 插件和成熟的app；
 配色思路参考 [PaletteMaker](https://palettemaker.com)。代码为独立实现。
